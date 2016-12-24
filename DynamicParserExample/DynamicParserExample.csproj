@@ -35,6 +35,10 @@
     <Reference Include="DynamicParser">
       <HintPath>..\..\DynamicParser\DynamicParser\bin\Debug\DynamicParser.dll</HintPath>
     </Reference>
+    <Reference Include="DynamicProcessor, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Программы\Системы программирования\ДИС\DynamicProcessorLib\Библиотека\DynamicProcessor.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -59,12 +63,6 @@
     <Compile Include="ImageChange.Designer.cs">
       <DependentUpon>ImageChange.cs</DependentUpon>
     </Compile>
-    <Compile Include="Percent.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Percent.Designer.cs">
-      <DependentUpon>Percent.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FrmExample.resx">
@@ -72,9 +70,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ImageChange.resx">
       <DependentUpon>ImageChange.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Percent.resx">
-      <DependentUpon>Percent.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

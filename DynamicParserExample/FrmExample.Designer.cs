@@ -45,6 +45,7 @@
             this.pbDraw.TabIndex = 0;
             this.pbDraw.TabStop = false;
             this.pbDraw.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbDraw_MouseDown);
+            this.pbDraw.MouseLeave += new System.EventHandler(this.pbDraw_MouseLeave);
             this.pbDraw.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbDraw_MouseMove);
             this.pbDraw.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pbDraw_MouseUp);
             // 

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using DynamicParser;
 
 namespace DynamicParserExample
 {
@@ -52,7 +54,15 @@ namespace DynamicParserExample
 
         void btnRecognize_Click(object sender, EventArgs e)
         {
+            Processor processor = new Processor(_backBtm, "Main");
+            List<Bitmap> lst = new List<Bitmap>(ImageChange.Images);
 
+        }
+
+        void pbDraw_MouseLeave(object sender, EventArgs e)
+        {
+            _currentRectangle = null;
+            _draw = false;
         }
 
         void pbDraw_MouseMove(object sender, MouseEventArgs e)
