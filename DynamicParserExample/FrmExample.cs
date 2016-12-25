@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using DynamicParser;
+using Processor = DynamicParser.Processor;
+using Region = DynamicParser.Region;
 
 namespace DynamicParserExample
 {
@@ -32,8 +35,15 @@ namespace DynamicParserExample
 
         void pbDraw_MouseUp(object sender, MouseEventArgs e)
         {
-            _draw = false;
-            SaveImage();
+            try
+            {
+                _draw = false;
+                SaveImage();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         void SaveImage()
@@ -48,15 +58,52 @@ namespace DynamicParserExample
                 for (int y = _currentRectangle.Value.Y, y1 = 0; y < _currentRectangle.Value.Bottom; y++, y1++)
                     for (int x = _currentRectangle.Value.X, x1 = 0; x < _currentRectangle.Value.Right; x++, x1++)
                         btm.SetPixel(x1, y1, _backBtm.GetPixel(x, y));
-                btm.Save(ic.FilePath);
+                ic.Save(_currentRectangle.Value, btm);
             }
+        }
+
+        void WriteImage(ImageRect ir)
+        {
+            Bitmap btm = ir.Bitm;
+            for (int y = ir.Rect.Y, y1 = 0; y < ir.Rect.Bottom; y++, y1++)
+                for (int x = ir.Rect.X, x1 = 0; x < ir.Rect.Right; x++, x1++)
+                    _backBtm.SetPixel(x, y, btm.GetPixel(x1, y1));
         }
 
         void btnRecognize_Click(object sender, EventArgs e)
         {
-            Processor processor = new Processor(_backBtm, "Main");
-            List<Bitmap> lst = new List<Bitmap>(ImageChange.Images);
-
+            try
+            {
+                Processor processor = new Processor(_backBtm, "Main");
+                List<ImageRect> lst = new List<ImageRect>(ImageChange.Images);
+                if (lst.Count <= 0)
+                    return;
+                Processor first = new Processor(lst[0].Bitm, lst[0].Tag);
+                Processor[] procs = new Processor[lst.Count - 1];
+                for (int k = 1, n = 0; k < lst.Count; k++, n++)
+                    procs[n] = new Processor(lst[k].Bitm, lst[k].Tag);
+                SearchResults sr = processor.GetEqual(first, procs);
+                Region region = first.CurrentRegion;
+                foreach (ImageRect ir in lst)
+                    region.Add(ir.Rect);
+                sr.FindRegion(region);
+                Attacher attacher = first.CurrentAttacher;
+                foreach (ImageRect ir in lst)
+                    attacher.Add(ir.MidX, ir.MidY);
+                attacher.SetMask(region);
+                //МОЖНО СДЕЛАТЬ ПОИСК СЛОВА
+                List<Attach.Proc> atts = attacher.Attaches.Select(att => att.Unique).ToList();
+                foreach (Attach.Proc fproc in atts)
+                    WriteImage(lst.First(rect => rect.Tag == ((fproc.Procs?.Count() ?? 0) > 0 ? (fproc.Procs?.ElementAt(0).Tag ?? string.Empty) : string.Empty)));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message);
+            }
+            finally
+            {
+                pbDraw.Refresh();
+            }
         }
 
         void pbDraw_MouseLeave(object sender, EventArgs e)

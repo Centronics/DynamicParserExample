@@ -2,31 +2,57 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace DynamicParserExample
 {
+    public struct ImageRect
+    {
+        public Bitmap Bitm;
+        public Rectangle Rect;
+        public string Tag;
+
+        public int MidX => Rect.X + Rect.Right / 2;
+
+        public int MidY => Rect.Y + Rect.Bottom / 2;
+    }
+
     public partial class ImageChange : Form
     {
-        const string Ext = "bmp";
+        const string ExtImg = "bmp", ExtSet = "xml";
         static readonly string SearchPath = Application.ExecutablePath;
+        string _filePath, _filePathSettings;
 
         public ImageChange()
         {
             InitializeComponent();
         }
 
-        public string FilePath { get; private set; }
-
-        public static IEnumerable<Bitmap> Images => Files.Select(fn => new Bitmap(fn));
+        public static IEnumerable<ImageRect> Images
+        {
+            get
+            {
+                foreach (string fname in GetFiles(ExtImg))
+                {
+                    string fn = Path.ChangeExtension(fname, ExtSet);
+                    if (!File.Exists(fn))
+                        continue;
+                    Rectangle p;
+                    using (FileStream fs = new FileStream(fn, FileMode.Open, FileAccess.Read))
+                        p = (Rectangle)new XmlSerializer(typeof(Point)).Deserialize(fs);
+                    ImageRect ir = new ImageRect { Bitm = new Bitmap(fname), Rect = p, Tag = Path.GetFileNameWithoutExtension(fname) };
+                    yield return ir;
+                }
+            }
+        }
 
         void btnOk_Click(object sender, EventArgs e)
         {
             try
             {
-                FilePath = string.Empty;
+                _filePath = string.Empty;
                 if (txtName.Text.Length > 1)
                 {
                     MessageBox.Show(this, @"Название символа не может быть более одного знака.");
@@ -37,7 +63,7 @@ namespace DynamicParserExample
                     MessageBox.Show(this, @"Название символа не может быть пустым.");
                     return;
                 }
-                FilePath = NewFileName(txtName.Text[0]);
+                NewFileName(txtName.Text[0]);
                 DialogResult = DialogResult.OK;
             }
             catch (Exception ex)
@@ -66,25 +92,22 @@ namespace DynamicParserExample
             return number;
         }
 
-        public static IEnumerable<string> Files
+        public static IEnumerable<string> GetFiles(string ext)
         {
-            get
+            if (!Directory.Exists(SearchPath))
+                throw new ArgumentException($"{nameof(NewFileName)}: Путь для хранения файлов не существует: {SearchPath}.");
+            foreach (string fn in Directory.GetFiles(SearchPath, $"*.{ext}"))
             {
-                if (!Directory.Exists(SearchPath))
-                    throw new ArgumentException($"{nameof(NewFileName)}: Путь для хранения файлов не существует: {SearchPath}.");
-                foreach (string fn in Directory.GetFiles(SearchPath, $"*.{Ext}"))
-                {
-                    if (string.IsNullOrWhiteSpace(fn))
-                        continue;
-                    yield return fn;
-                }
+                if (string.IsNullOrWhiteSpace(fn))
+                    continue;
+                yield return fn;
             }
         }
 
-        public static string NewFileName(char name)
+        void NewFileName(char name)
         {
             long fileNumber = 0;
-            foreach (string fname in Files)
+            foreach (string fname in GetFiles(ExtImg))
             {
                 string fn = Path.GetFileNameWithoutExtension(fname);
                 if (string.IsNullOrWhiteSpace(fn) || fn.Length < 2) continue;
@@ -101,7 +124,18 @@ namespace DynamicParserExample
                 fileNumber = r;
             }
             char symbol = char.IsUpper(name) ? 'b' : 'm';
-            return $@"{SearchPath}\{symbol}{name}{fileNumber + 1}.{Ext}";
+            string path = $@"{SearchPath}\{symbol}{name}{fileNumber + 1}.";
+            _filePath = $"{path}{ExtImg}";
+            _filePathSettings = $"{path}{ExtSet}";
+        }
+
+        public void Save(Rectangle pt, Bitmap btm)
+        {
+            if (btm == null)
+                throw new ArgumentNullException($@"{nameof(Save)}: Выделенная область не указана.");
+            btm.Save(_filePath);
+            using (FileStream fs = new FileStream(_filePathSettings, FileMode.Open, FileAccess.Read))
+                new XmlSerializer(typeof(Rectangle)).Serialize(fs, pt);
         }
     }
 }
