@@ -109,19 +109,24 @@ namespace DynamicParserExample
                        if (lst.Count <= 0)
                            return;
                        List<Processor> procs = new List<Processor>(from ir in lst where ir.HasValue select new Processor(ir.Bitm, ir.SymbolString));
-                       SearchResults sr = processor.GetEqual(first, procs);
-                       Region region = first.CurrentRegion;
-                       foreach (ImageRect ir in lst)
-                           region.Add(ir.Rect);
-                       sr.FindRegion(region);
-                       Attacher attacher = first.CurrentAttacher;
-                       foreach (ImageRect ir in lst)
-                           attacher.Add(ir.MidX, ir.MidY);
-                       attacher.SetMask(region);
-                       //МОЖНО СДЕЛАТЬ ПОИСК СЛОВА
-                       List<Attach.Proc> atts = attacher.Attaches.Select(att => att.Unique).ToList();
-                       foreach (Attach.Proc fproc in atts)
-                           WriteImage(lst.First(rect => rect.Tag == ((fproc.Procs?.Count() ?? 0) > 0 ? (fproc.Procs?.ElementAt(0).Tag ?? string.Empty) : string.Empty)));
+                       List<ProcessorContainer> processorContainers = new List<ProcessorContainer>(procs.Count);
+                       processorContainers.AddRange(procs.Select(proc => new ProcessorContainer(proc)));
+                       SearchResults[] results = processor.GetEqual(processorContainers);
+                       for (int k = 0; k < results.Length; k++)
+                       {
+                           Region region = processor.CurrentRegion;//МОЖНО СОБРАТЬ ВСЕ ТОЧКИ
+                           foreach (ImageRect ir in lst)
+                               region.Add(ir.Rect);
+                           results[k].FindRegion(region);
+                           Attacher attacher = processor.CurrentAttacher;
+                           foreach (ImageRect ir in lst)
+                               attacher.Add(ir.MidX, ir.MidY);
+                           attacher.SetMask(region);
+                           List<Attach.Proc> atts = attacher.Attaches.Select(att => att.Unique).ToList();
+                           foreach (Attach.Proc fproc in atts)
+                               WriteImage(lst.First(rect => rect.Tag == ((fproc.Procs?.Count() ?? 0) > 0
+                                               ? (fproc.Procs?.ElementAt(0).Tag ?? string.Empty) : string.Empty)));
+                       }
                    }
                    catch (Exception ex)
                    {
