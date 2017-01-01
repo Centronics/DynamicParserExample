@@ -17,6 +17,29 @@ namespace DynamicParserExample
         public int MidX => Rect.X + Rect.Right / 2;
 
         public int MidY => Rect.Y + Rect.Bottom / 2;
+
+        public string SymbolString => Symbol.HasValue ? new string(Symbol.Value, 1) : null;
+
+        public bool HasValue => Symbol.HasValue;
+
+        char? Symbol
+        {
+            get
+            {
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(Tag) || Tag.Length < 2)
+                        return null;
+                    if (char.ToLower(Tag[0]) == 'b')
+                        return char.ToUpper(Tag[1]);
+                    return char.ToLower(Tag[0]) == 'm' ? char.ToLower(Tag[1]) : (char?)null;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
     }
 
     public partial class ImageChange : Form
@@ -34,15 +57,21 @@ namespace DynamicParserExample
         {
             get
             {
+                // ReSharper disable once LoopCanBeConvertedToQuery
                 foreach (string fname in GetFiles(ExtImg))
                 {
+                    if (string.IsNullOrWhiteSpace(fname))
+                        continue;
                     string fn = Path.ChangeExtension(fname, ExtSet);
                     if (!File.Exists(fn))
                         continue;
-                    Rectangle p;
-                    using (FileStream fs = new FileStream(fn, FileMode.Open, FileAccess.Read))
-                        p = (Rectangle)new XmlSerializer(typeof(Point)).Deserialize(fs);
-                    ImageRect ir = new ImageRect { Bitm = new Bitmap(fname), Rect = p, Tag = Path.GetFileNameWithoutExtension(fname) };
+                    Rectangle r = (Rectangle)new XmlSerializer(typeof(Point)).Deserialize(new FileStream(fn, FileMode.Open, FileAccess.Read));
+                    ImageRect ir = new ImageRect
+                    {
+                        Bitm = new Bitmap(fname),
+                        Rect = r,
+                        Tag = Path.GetFileNameWithoutExtension(fname)
+                    };
                     yield return ir;
                 }
             }

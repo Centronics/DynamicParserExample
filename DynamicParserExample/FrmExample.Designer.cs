@@ -32,6 +32,8 @@
             this.btnRecognize = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnEducation = new System.Windows.Forms.Button();
+            this.lstResults = new System.Windows.Forms.ListBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pbDraw)).BeginInit();
             this.SuspendLayout();
             // 
@@ -80,11 +82,30 @@
             this.btnEducation.UseVisualStyleBackColor = true;
             this.btnEducation.Click += new System.EventHandler(this.btnEducation_Click);
             // 
+            // lstResults
+            // 
+            this.lstResults.FormattingEnabled = true;
+            this.lstResults.Location = new System.Drawing.Point(12, 244);
+            this.lstResults.Name = "lstResults";
+            this.lstResults.Size = new System.Drawing.Size(237, 56);
+            this.lstResults.TabIndex = 4;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 228);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(62, 13);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "Результат:";
+            // 
             // FrmExample
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(261, 235);
+            this.ClientSize = new System.Drawing.Size(261, 311);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lstResults);
             this.Controls.Add(this.btnEducation);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnRecognize);
@@ -98,6 +119,7 @@
             this.Shown += new System.EventHandler(this.FrmExample_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.pbDraw)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -107,6 +129,8 @@
         private System.Windows.Forms.Button btnRecognize;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnEducation;
+        private System.Windows.Forms.ListBox lstResults;
+        private System.Windows.Forms.Label label1;
     }
 }
 
