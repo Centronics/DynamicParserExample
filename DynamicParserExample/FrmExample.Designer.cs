@@ -37,6 +37,7 @@
             this.lstWords = new System.Windows.Forms.ListBox();
             this.btnWordAdd = new System.Windows.Forms.Button();
             this.btnWordRemove = new System.Windows.Forms.Button();
+            this.txtWord = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbDraw)).BeginInit();
             this.SuspendLayout();
             // 
@@ -105,34 +106,45 @@
             // lstWords
             // 
             this.lstWords.FormattingEnabled = true;
-            this.lstWords.Location = new System.Drawing.Point(255, 41);
+            this.lstWords.Location = new System.Drawing.Point(255, 67);
             this.lstWords.Name = "lstWords";
-            this.lstWords.Size = new System.Drawing.Size(237, 264);
+            this.lstWords.Size = new System.Drawing.Size(237, 238);
             this.lstWords.TabIndex = 6;
             // 
             // btnWordAdd
             // 
             this.btnWordAdd.Location = new System.Drawing.Point(255, 12);
             this.btnWordAdd.Name = "btnWordAdd";
-            this.btnWordAdd.Size = new System.Drawing.Size(75, 23);
+            this.btnWordAdd.Size = new System.Drawing.Size(114, 23);
             this.btnWordAdd.TabIndex = 8;
-            this.btnWordAdd.Text = "Добавить";
+            this.btnWordAdd.Text = "Добавить слово";
             this.btnWordAdd.UseVisualStyleBackColor = true;
+            this.btnWordAdd.Click += new System.EventHandler(this.btnWordAdd_Click);
             // 
             // btnWordRemove
             // 
-            this.btnWordRemove.Location = new System.Drawing.Point(417, 12);
+            this.btnWordRemove.Location = new System.Drawing.Point(375, 12);
             this.btnWordRemove.Name = "btnWordRemove";
-            this.btnWordRemove.Size = new System.Drawing.Size(75, 23);
+            this.btnWordRemove.Size = new System.Drawing.Size(117, 23);
             this.btnWordRemove.TabIndex = 9;
-            this.btnWordRemove.Text = "Удалить";
+            this.btnWordRemove.Text = "Удалить слово";
             this.btnWordRemove.UseVisualStyleBackColor = true;
+            this.btnWordRemove.Click += new System.EventHandler(this.btnWordRemove_Click);
+            // 
+            // txtWord
+            // 
+            this.txtWord.Location = new System.Drawing.Point(255, 41);
+            this.txtWord.MaxLength = 38;
+            this.txtWord.Name = "txtWord";
+            this.txtWord.Size = new System.Drawing.Size(237, 20);
+            this.txtWord.TabIndex = 10;
             // 
             // FrmExample
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(503, 311);
+            this.Controls.Add(this.txtWord);
             this.Controls.Add(this.btnWordRemove);
             this.Controls.Add(this.btnWordAdd);
             this.Controls.Add(this.lstWords);
@@ -166,6 +178,7 @@
         private System.Windows.Forms.ListBox lstWords;
         private System.Windows.Forms.Button btnWordAdd;
         private System.Windows.Forms.Button btnWordRemove;
+        private System.Windows.Forms.TextBox txtWord;
     }
 }
 

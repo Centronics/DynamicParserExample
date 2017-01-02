@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using DynamicParser;
@@ -16,8 +18,10 @@ namespace DynamicParserExample
             StrRecognize1 = "Отмена.",
             StrRecognize2 = "Отмена..",
             StrRecognize3 = "Отмена...",
-            StrError = "Ошибка";
-        readonly string _strRecog;
+            StrError = "Ошибка",
+            StrWordsFile = "Words";
+
+        readonly string _strRecog, _strWordsPath = Path.Combine(Application.StartupPath, StrWordsFile + ".txt");
         readonly Graphics _backGrFront, _frontGrFront;
         readonly Bitmap _backBtm, _frontBtm;
         readonly Pen _blackPen = new Pen(Color.Black, 2.0f), _redPen = new Pen(Color.Red, 2.0f);
@@ -68,6 +72,79 @@ namespace DynamicParserExample
                     for (int x = _currentRectangle.Value.X, x1 = 0; x < _currentRectangle.Value.Right; x++, x1++)
                         btm.SetPixel(x1, y1, _backBtm.GetPixel(x, y));
                 ic.Save(_currentRectangle.Value, btm);
+            }
+        }
+
+        void btnWordAdd_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(txtWord.Text))
+                    return;
+                lstWords.Items.Insert(0, txtWord.Text);
+                WordsSave();
+                txtWord.Text = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                WordsLoad();
+            }
+        }
+
+        void btnWordRemove_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int index = lstWords.SelectedIndex;
+                if (index < 0)
+                    return;
+                lstWords.Items.RemoveAt(index);
+                WordsSave();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                WordsLoad();
+            }
+        }
+
+        void WordsSave()
+        {
+            try
+            {
+                File.WriteAllLines(_strWordsPath, lstWords.Items.Cast<string>(), Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        void WordsLoad()
+        {
+            try
+            {
+                lstWords.Items.Clear();
+                if (!File.Exists(_strWordsPath))
+                    return;
+                foreach (string s in File.ReadAllLines(_strWordsPath))
+                {
+                    string str = s;
+                    if (s.Length > txtWord.MaxLength)
+                        str = s.Substring(0, txtWord.MaxLength);
+                    lstWords.Items.Add(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -203,6 +280,7 @@ namespace DynamicParserExample
             pbDraw.BackgroundImage = _backBtm;
             pbDraw.Image = _frontBtm;
             btnClear_Click(null, null);
+            WordsLoad();
         }
 
         void btnClear_Click(object sender, EventArgs e)
