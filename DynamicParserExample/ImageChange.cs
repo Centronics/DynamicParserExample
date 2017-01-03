@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using Region = DynamicParser.Region;
 
 namespace DynamicParserExample
 {
@@ -53,7 +54,7 @@ namespace DynamicParserExample
             InitializeComponent();
         }
 
-        public static IEnumerable<ImageRect> Images
+        static IEnumerable<ImageRect> Images
         {
             get
             {
@@ -65,7 +66,7 @@ namespace DynamicParserExample
                     string fn = Path.ChangeExtension(fname, ExtSet);
                     if (!File.Exists(fn))
                         continue;
-                    Rectangle r = (Rectangle)new XmlSerializer(typeof(Point)).Deserialize(new FileStream(fn, FileMode.Open, FileAccess.Read));
+                    Rectangle r = (Rectangle)new XmlSerializer(typeof(Rectangle)).Deserialize(new FileStream(fn, FileMode.Open, FileAccess.Read));
                     ImageRect ir = new ImageRect
                     {
                         Bitm = new Bitmap(fname),
@@ -74,6 +75,23 @@ namespace DynamicParserExample
                     };
                     yield return ir;
                 }
+            }
+        }
+
+        public static List<ImageRect> ImagesNoConflict
+        {
+            get
+            {
+                List<ImageRect> lst = new List<ImageRect>();
+                Region reg = new Region(FrmExample.PbWidth, FrmExample.PbHeight);
+                foreach (ImageRect ir in Images)
+                {
+                    if (reg.IsConflict(ir.Rect))
+                        continue;
+                    reg.Add(ir.Rect);
+                    lst.Add(ir);
+                }
+                return lst;
             }
         }
 

@@ -21,6 +21,9 @@ namespace DynamicParserExample
             StrError = "Ошибка",
             StrWordsFile = "Words";
 
+        public static int PbWidth { get; private set; }
+        public static int PbHeight { get; private set; }
+
         readonly string _strRecog, _strWordsPath = Path.Combine(Application.StartupPath, StrWordsFile + ".txt");
         readonly Graphics _backGrFront, _frontGrFront;
         readonly Bitmap _backBtm, _frontBtm;
@@ -38,6 +41,8 @@ namespace DynamicParserExample
             _backGrFront = Graphics.FromImage(_backBtm);
             _frontGrFront = Graphics.FromImage(_frontBtm);
             _strRecog = btnRecognize.Text;
+            PbWidth = pbDraw.Width;
+            PbHeight = pbDraw.Height;
         }
 
         void pbDraw_MouseDown(object sender, MouseEventArgs e)
@@ -181,43 +186,51 @@ namespace DynamicParserExample
                {
                    try
                    {
-                       Processor processor = new Processor(_backBtm, "Main");
-                       List<ImageRect> lst = new List<ImageRect>(ImageChange.Images);
-                       if (lst.Count <= 0)
-                           return;
-                       List<Processor> procs = new List<Processor>(from ir in lst where ir.HasValue select new Processor(ir.Bitm, ir.SymbolString));
-                       List<ProcessorContainer> processorContainers = new List<ProcessorContainer>(procs.Count);
-                       processorContainers.AddRange(procs.Select(proc => new ProcessorContainer(proc)));
-                       SearchResults[] results = processor.GetEqual(processorContainers);
-                       for (int k = 0; k < results.Length; k++)
+                       try
                        {
-                           Region region = processor.CurrentRegion;//МОЖНО СОБРАТЬ ВСЕ ТОЧКИ
-                           foreach (ImageRect ir in lst)
-                               region.Add(ir.Rect);
-                           results[k].FindRegion(region);
+                           List<ImageRect> reg = ImageChange.ImagesNoConflict;
+                           if (reg.Count <= 0)
+                               return;
+                           Processor processor = new Processor(_backBtm, "Main");
+                           SearchResults sr = SearchResults.Combine(processor.GetEqual(
+                               new List<ProcessorContainer>((from ir in reg select new Processor(ir.Bitm, ir.SymbolString)).
+                                   Select(proc => new ProcessorContainer(new[] { proc })))));
+                           Region region = processor.CurrentRegion;
                            Attacher attacher = processor.CurrentAttacher;
-                           foreach (ImageRect ir in lst)
+                           foreach (ImageRect ir in reg)
+                           {
+                               if (region.IsConflict(ir.Rect))
+                                   continue;
+                               region.Add(ir.Rect);
                                attacher.Add(ir.MidX, ir.MidY);
+                           }
+                           sr.FindRegion(region);
                            attacher.SetMask(region);
                            List<Attach.Proc> atts = attacher.Attaches.Select(att => att.Unique).ToList();
-                           foreach (Attach.Proc fproc in atts)
-                               WriteImage(lst.First(rect => rect.Tag == ((fproc.Procs?.Count() ?? 0) > 0
-                                               ? (fproc.Procs?.ElementAt(0).Tag ?? string.Empty) : string.Empty)));
+                           StringBuilder sb = new StringBuilder();
+                           foreach (Attach.Proc pr in atts)
+                           {
+                               sb.Append(pr.Procs);//Дописать процедуру подбора различных букв.
+                           }
+                       }
+                       catch (Exception ex)
+                       {
+                           Invoke((Action)delegate
+                          {
+                              MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK,
+                                  MessageBoxIcon.Exclamation);
+                          });
+                           Waiting();
+                           btnRecognize.Text = StrError;
+                       }
+                       finally
+                       {
+                           pbDraw.Refresh();
                        }
                    }
-                   catch (Exception ex)
+                   catch
                    {
-                       Invoke((Action)delegate
-                       {
-                           MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK,
-                               MessageBoxIcon.Exclamation);
-                       });
-                       Waiting();
-                       btnRecognize.Text = StrError;
-                   }
-                   finally
-                   {
-                       pbDraw.Refresh();
+                       //ignored
                    }
                })
                 {
