@@ -153,14 +153,6 @@ namespace DynamicParserExample
             }
         }
 
-        void WriteImage(ImageRect ir)
-        {
-            Bitmap btm = ir.Bitm;
-            for (int y = ir.Rect.Y, y1 = 0; y < ir.Rect.Bottom; y++, y1++)
-                for (int x = ir.Rect.X, x1 = 0; x < ir.Rect.Right; x++, x1++)
-                    _backBtm.SetPixel(x, y, btm.GetPixel(x1, y1));
-        }
-
         void Recognizing()
         {
             try
@@ -206,9 +198,8 @@ namespace DynamicParserExample
                            }
                            sr.FindRegion(region);
                            attacher.SetMask(region);
-                           List<Attach.Proc> atts = attacher.Attaches.Select(att => att.Unique).ToList();
                            StringBuilder sb = new StringBuilder();
-                           foreach (Attach.Proc pr in atts)
+                           foreach (Attach.Proc pr in attacher.Attaches.Select(att => att.Unique))
                            {
                                sb.Append(pr.Procs);//Дописать процедуру подбора различных букв.
                            }
