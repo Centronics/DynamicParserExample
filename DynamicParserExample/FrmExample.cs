@@ -184,9 +184,7 @@ namespace DynamicParserExample
                            if (reg.Count <= 0)
                                return;
                            Processor processor = new Processor(_backBtm, "Main");
-                           SearchResults sr = SearchResults.Combine(processor.GetEqual(
-                               new List<ProcessorContainer>((from ir in reg select new Processor(ir.Bitm, ir.SymbolString)).
-                                   Select(proc => new ProcessorContainer(new[] { proc })))));
+                           SearchResults sr = processor.GetEqual((from ir in reg select new Processor(ir.Bitm, ir.SymbolString)).ToArray());
                            Region region = processor.CurrentRegion;
                            Attacher attacher = processor.CurrentAttacher;
                            foreach (ImageRect ir in reg)
@@ -196,7 +194,8 @@ namespace DynamicParserExample
                                region.Add(ir.Rect);
                                attacher.Add(ir.MidX, ir.MidY);
                            }
-                           sr.FindRegion(region);
+                           if (sr.FindRegion(region) != RegionStatus.Ok)
+                               throw new Exception();
                            attacher.SetMask(region);
                            StringBuilder sb = new StringBuilder();
                            foreach (Attach.Proc pr in attacher.Attaches.Select(att => att.Unique))
@@ -208,8 +207,7 @@ namespace DynamicParserExample
                        {
                            Invoke((Action)delegate
                           {
-                              MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK,
-                                  MessageBoxIcon.Exclamation);
+                              MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                           });
                            Waiting();
                            btnRecognize.Text = StrError;
