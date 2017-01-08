@@ -21,63 +21,24 @@ namespace DynamicParserExample
             StrError = "Ошибка",
             StrWordsFile = "Words";
 
-        public static int PbWidth { get; private set; }
-        public static int PbHeight { get; private set; }
-
-        readonly string _strRecog, _strWordsPath = Path.Combine(Application.StartupPath, StrWordsFile + ".txt");
-        readonly Graphics _backGrFront, _frontGrFront;
-        readonly Bitmap _backBtm, _frontBtm;
-        readonly Pen _blackPen = new Pen(Color.Black, 2.0f), _redPen = new Pen(Color.Red, 2.0f);
-        bool _draw, _education;
-        Point _eduPoint;
-        Rectangle? _currentRectangle;
+        readonly string _strRecog, _strWordsPath = Path.Combine(Application.StartupPath, $"{StrWordsFile}.txt");
+        readonly Graphics _frontGrFront;
+        readonly Bitmap _frontBtm;
+        readonly Pen _blackPen = new Pen(Color.Black, 2.0f);
         Thread _waitThread, _workThread;
+        bool _draw;
 
         public FrmExample()
         {
             InitializeComponent();
-            _backBtm = new Bitmap(pbDraw.Width, pbDraw.Height);
             _frontBtm = new Bitmap(pbDraw.Width, pbDraw.Height);
-            _backGrFront = Graphics.FromImage(_backBtm);
             _frontGrFront = Graphics.FromImage(_frontBtm);
             _strRecog = btnRecognize.Text;
-            PbWidth = pbDraw.Width;
-            PbHeight = pbDraw.Height;
         }
 
         void pbDraw_MouseDown(object sender, MouseEventArgs e)
         {
             _draw = true;
-            _eduPoint = e.Location;
-        }
-
-        void pbDraw_MouseUp(object sender, MouseEventArgs e)
-        {
-            try
-            {
-                _draw = false;
-                SaveImage();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        void SaveImage()
-        {
-            if (_currentRectangle == null)
-                return;
-            using (ImageChange ic = new ImageChange())
-            {
-                if (ic.ShowDialog() != DialogResult.OK)
-                    return;
-                Bitmap btm = new Bitmap(_currentRectangle.Value.Width, _currentRectangle.Value.Height);
-                for (int y = _currentRectangle.Value.Y, y1 = 0; y < _currentRectangle.Value.Bottom; y++, y1++)
-                    for (int x = _currentRectangle.Value.X, x1 = 0; x < _currentRectangle.Value.Right; x++, x1++)
-                        btm.SetPixel(x1, y1, _backBtm.GetPixel(x, y));
-                ic.Save(_currentRectangle.Value, btm);
-            }
         }
 
         void btnWordAdd_Click(object sender, EventArgs e)
@@ -153,6 +114,19 @@ namespace DynamicParserExample
             }
         }
 
+        Bitmap GetBitmap(Rectangle rect)
+        {
+            Bitmap btm = new Bitmap(rect.Width, rect.Height);
+            if (rect.Right > _frontBtm.Width)
+                throw new ArgumentException($@"{nameof(GetBitmap)}: Координата оси X выходит за пределы.", nameof(rect));
+            if (rect.Bottom > _frontBtm.Height)
+                throw new ArgumentException($@"{nameof(GetBitmap)}: Координата оси Y выходит за пределы.", nameof(rect));
+            for (int y1 = 0, y = rect.Y; y < rect.Bottom; y1++, y++)
+                for (int x1 = 0, x = rect.X; x < rect.Right; x1++, x++)
+                    btm.SetPixel(x1, y1, _frontBtm.GetPixel(x, y));
+            return btm;
+        }
+
         void Recognizing()
         {
             try
@@ -180,28 +154,42 @@ namespace DynamicParserExample
                    {
                        try
                        {
-                           List<ImageRect> reg = ImageChange.ImagesNoConflict;
-                           if (reg.Count <= 0)
+                           List<ImageRect> images = new List<ImageRect>(FileOperations.Images);
+                           if (images.Count <= 0)
                                return;
-                           Processor processor = new Processor(_backBtm, "Main");
-                           SearchResults sr = processor.GetEqual((from ir in reg select new Processor(ir.Bitm, ir.SymbolString)).ToArray());
-                           Region region = processor.CurrentRegion;
-                           Attacher attacher = processor.CurrentAttacher;
-                           foreach (ImageRect ir in reg)
+                           Processor processor = new Processor(_frontBtm, "Main");
+                           SearchResults sr = processor.GetEqual((from ir in images select new Processor(ir.Bitm, ir.SymbolString)).ToArray());
+                           Region region = sr.AllMaps;
+                           WordSearcher ws = GetWords(region.Elements);
+                           foreach (Registered registered in region.Elements)
                            {
-                               if (region.IsConflict(ir.Rect))
-                                   continue;
-                               region.Add(ir.Rect);
-                               attacher.Add(ir.MidX, ir.MidY);
+                               Bitmap btm = GetBitmap(registered.Region);
+                               foreach (Reg reg in registered.Register)
+                               {
+                                   foreach (Processor pr in reg.Procs)
+                                   {
+                                       string tag = pr.Tag;
+                                       if (tag.Length != 1)
+                                           continue;
+                                       FileOperations.Save(tag[0], btm);
+                                   }
+                               }
                            }
-                           if (sr.FindRegion(region) != RegionStatus.Ok)
-                               throw new Exception();
-                           attacher.SetMask(region);
-                           StringBuilder sb = new StringBuilder();
-                           foreach (Attach.Proc pr in attacher.Attaches.Select(att => att.Unique))
-                           {
-                               sb.Append(pr.Procs);//Дописать процедуру подбора различных букв.
-                           }
+                           List<string> results = (from string s in lstWords.Items where ws.IsEqual(s) select s).ToList();
+                           Invoke((Action)delegate
+                          {
+                              try
+                              {
+                                  lstResults.Items.Clear();
+                                  foreach (string s in results)
+                                      lstResults.Items.Add(s);
+                              }
+                              catch (Exception ex)
+                              {
+                                  MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                                  btnRecognize.Text = StrError;
+                              }
+                          });
                        }
                        catch (Exception ex)
                        {
@@ -233,6 +221,14 @@ namespace DynamicParserExample
             }
         }
 
+        static WordSearcher GetWords(IEnumerable<Registered> lstRegs)//МОЖНО СДЕЛАТЬ КОНСТРУКТОР
+        {
+            if (lstRegs == null)
+                throw new ArgumentNullException(nameof(lstRegs), $@"{nameof(GetWords)}: Список зарегистрированных объектов не указан (null).");
+            return new WordSearcher(new List<string[]>(
+                    from registered in lstRegs where registered != null select (from proc in registered.Register from pr in proc.Procs select pr.Tag).ToArray()));
+        }
+
         void btnRecognize_Click(object sender, EventArgs e)
         {
             try
@@ -247,7 +243,6 @@ namespace DynamicParserExample
 
         void pbDraw_MouseLeave(object sender, EventArgs e)
         {
-            _currentRectangle = null;
             _draw = false;
         }
 
@@ -255,21 +250,8 @@ namespace DynamicParserExample
         {
             try
             {
-                if (!_draw) return;
-                if (!_education)
-                {
-                    _backGrFront.DrawRectangle(_blackPen, new Rectangle(e.X, e.Y, 1, 1));
-                    return;
-                }
-                _frontGrFront.Clear(Color.Transparent);
-                int bx = _eduPoint.X, by = _eduPoint.Y;
-                if (e.X < _eduPoint.X)
-                    bx = e.X;
-                if (e.Y < _eduPoint.Y)
-                    by = e.Y;
-                int lx = Math.Abs(_eduPoint.X - e.X), ly = Math.Abs(_eduPoint.Y - e.Y);
-                _currentRectangle = new Rectangle(bx, by, lx, ly);
-                _frontGrFront.DrawRectangle(_redPen, _currentRectangle.Value);
+                if (_draw)
+                    _frontGrFront.DrawRectangle(_blackPen, new Rectangle(e.X, e.Y, 1, 1));
             }
             finally
             {
@@ -279,7 +261,6 @@ namespace DynamicParserExample
 
         void FrmExample_Shown(object sender, EventArgs e)
         {
-            pbDraw.BackgroundImage = _backBtm;
             pbDraw.Image = _frontBtm;
             btnClear_Click(null, null);
             WordsLoad();
@@ -287,17 +268,13 @@ namespace DynamicParserExample
 
         void btnClear_Click(object sender, EventArgs e)
         {
-            _backGrFront.Clear(Color.White);
-            pbDraw.Refresh();
-        }
-
-        void btnEducation_Click(object sender, EventArgs e)
-        {
             try
             {
-                _frontGrFront.Clear(Color.Transparent);
-                _education = !_education;
-                btnRecognize.Enabled = !_education;
+                _frontGrFront.Clear(Color.White);
+            }
+            catch
+            {
+                //ignored
             }
             finally
             {
