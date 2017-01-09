@@ -27,6 +27,7 @@ namespace DynamicParserExample
         readonly Pen _blackPen = new Pen(Color.Black, 2.0f);
         Thread _waitThread, _workThread;
         bool _draw;
+        int _currentImage;
 
         public FrmExample()
         {
@@ -102,6 +103,8 @@ namespace DynamicParserExample
                     return;
                 foreach (string s in File.ReadAllLines(_strWordsPath))
                 {
+                    if (string.IsNullOrWhiteSpace(s))
+                        continue;
                     string str = s;
                     if (s.Length > txtWord.MaxLength)
                         str = s.Substring(0, txtWord.MaxLength);
@@ -156,7 +159,10 @@ namespace DynamicParserExample
                        {
                            List<ImageRect> images = new List<ImageRect>(FileOperations.Images);
                            if (images.Count <= 0)
+                           {
+                               MessageBox.Show(this, @"Никаких образов не найдено. Нарисуйте какой-нибудь образ, затем сохраните его.");
                                return;
+                           }
                            Processor processor = new Processor(_frontBtm, "Main");
                            SearchResults sr = processor.GetEqual((from ir in images select new Processor(ir.Bitm, ir.SymbolString)).ToArray());
                            Region region = sr.AllMaps;
@@ -218,6 +224,62 @@ namespace DynamicParserExample
             catch (Exception ex)
             {
                 MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+        }
+
+        void pbDraw_MouseUp(object sender, MouseEventArgs e)
+        {
+            _draw = false;
+        }
+
+        void btnNext_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                List<ImageRect> lst = new List<ImageRect>(FileOperations.Images);
+                if (lst.Count <= 0)
+                    return;
+                if (_currentImage >= lst.Count)
+                    _currentImage = 0;
+                if (_currentImage < lst.Count)
+                    pbBrowse.Image = lst[_currentImage++].Bitm;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message);
+            }
+        }
+
+        void btnPrev_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                List<ImageRect> lst = new List<ImageRect>(FileOperations.Images);
+                if (lst.Count <= 0)
+                    return;
+                if (_currentImage <= 0)
+                    _currentImage = 0;
+                else
+                    _currentImage--;
+                if (_currentImage < lst.Count)
+                    pbBrowse.Image = lst[_currentImage].Bitm;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message);
+            }
+        }
+
+        void btnSaveImage_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (FrmSymbol fs = new FrmSymbol())
+                    fs.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message);
             }
         }
 

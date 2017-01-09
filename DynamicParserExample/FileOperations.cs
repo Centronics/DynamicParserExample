@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -39,67 +40,33 @@ namespace DynamicParserExample
     public sealed class FileOperations
     {
         const string ExtImg = "bmp", ExtSet = "xml";
-        static readonly string SearchPath = Application.ExecutablePath;
+        static readonly string SearchPath = Application.StartupPath;
 
-        public static IEnumerable<ImageRect> Images
+        public static IEnumerable<string> BitmapFiles => Directory.GetFiles(SearchPath, $"*.{ExtImg}");
+
+        public static IEnumerable<ImageRect> Images => BitmapFiles.Select(fname => new ImageRect
         {
-            get
-            {
-                // ReSharper disable once LoopCanBeConvertedToQuery
-                foreach (string fname in GetFiles(ExtImg))
-                {
-                    if (string.IsNullOrWhiteSpace(fname))
-                        continue;
-                    string fn = Path.ChangeExtension(fname, ExtSet);
-                    if (!File.Exists(fn))
-                        continue;
-                    ImageRect ir = new ImageRect
-                    {
-                        Bitm = new Bitmap(fname),
-                        Tag = Path.GetFileNameWithoutExtension(fname)
-                    };
-                    yield return ir;
-                }
-            }
-        }
+            Bitm = new Bitmap(fname),
+            Tag = Path.GetFileNameWithoutExtension(fname)
+        });
 
         static long? GetNumber(string str)
         {
-            if (string.IsNullOrWhiteSpace(str))
-                return null;
-            if (str.Length < 2)
-                return null;
-            StringBuilder sb = new StringBuilder();
-            for (int k = str.Length - 1; k >= 0; k--)
-            {
-                char ch = str[k];
-                if (char.IsDigit(ch))
-                    sb.Append(ch);
-                else
-                    break;
-            }
             long number;
-            long.TryParse(sb.ToString(), out number);
+            long.TryParse(str, out number);
             return number;
-        }
-
-        public static IEnumerable<string> GetFiles(string ext)
-        {
-            return Directory.GetFiles(SearchPath, $"*.{ext}");
         }
 
         static string NewFileName(char name)
         {
             long fileNumber = 0;
-            foreach (string fname in GetFiles(ExtImg))
+            foreach (string fname in BitmapFiles)
             {
                 string fn = Path.GetFileNameWithoutExtension(fname);
-                if (string.IsNullOrWhiteSpace(fn) || fn.Length < 2) continue;
-                fn = fn.Substring(2);
-                if (string.IsNullOrWhiteSpace(fn) || fn.Length < 2)
-                    continue;
+                if (string.IsNullOrWhiteSpace(fn) || fn.Length < 3) continue;
                 if (fn[1] != name)
                     continue;
+                fn = fn.Substring(2);
                 long? number = GetNumber(fn);
                 if (number == null)
                     continue;
@@ -119,5 +86,4 @@ namespace DynamicParserExample
             btm.Save(NewFileName(name));
         }
     }
-
 }
