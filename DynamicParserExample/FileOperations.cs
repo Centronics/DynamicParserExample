@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace DynamicParserExample
@@ -15,15 +14,13 @@ namespace DynamicParserExample
 
         public string SymbolString => Symbol.HasValue ? new string(Symbol.Value, 1) : null;
 
-        public bool HasValue => Symbol.HasValue;
-
         char? Symbol
         {
             get
             {
                 try
                 {
-                    if (string.IsNullOrWhiteSpace(Tag) || Tag.Length < 2)
+                    if (string.IsNullOrWhiteSpace(Tag) || Tag.Length < 3)
                         return null;
                     if (char.ToLower(Tag[0]) == 'b')
                         return char.ToUpper(Tag[1]);
@@ -39,7 +36,7 @@ namespace DynamicParserExample
 
     public sealed class FileOperations
     {
-        const string ExtImg = "bmp", ExtSet = "xml";
+        const string ExtImg = "bmp";
         static readonly string SearchPath = Application.StartupPath;
 
         public static IEnumerable<string> BitmapFiles => Directory.GetFiles(SearchPath, $"*.{ExtImg}");

@@ -88,9 +88,11 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtSymbol);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.KeyPreview = true;
             this.Name = "FrmSymbol";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FrmSymbol";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmSymbol_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.pbBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

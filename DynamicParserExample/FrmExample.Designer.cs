@@ -38,14 +38,14 @@
             this.txtWord = new System.Windows.Forms.TextBox();
             this.btnSaveImage = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.pbBrowse = new System.Windows.Forms.PictureBox();
-            this.btnNext = new System.Windows.Forms.Button();
             this.btnPrev = new System.Windows.Forms.Button();
+            this.btnNext = new System.Windows.Forms.Button();
+            this.pbBrowse = new System.Windows.Forms.PictureBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbDraw)).BeginInit();
             this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbBrowse)).BeginInit();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // pbDraw
@@ -54,7 +54,7 @@
             this.pbDraw.Cursor = System.Windows.Forms.Cursors.Cross;
             this.pbDraw.Location = new System.Drawing.Point(12, 41);
             this.pbDraw.Name = "pbDraw";
-            this.pbDraw.Size = new System.Drawing.Size(237, 186);
+            this.pbDraw.Size = new System.Drawing.Size(43, 50);
             this.pbDraw.TabIndex = 0;
             this.pbDraw.TabStop = false;
             this.pbDraw.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbDraw_MouseDown);
@@ -148,24 +148,15 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Существующие образы";
             // 
-            // groupBox2
+            // btnPrev
             // 
-            this.groupBox2.Controls.Add(this.lstResults);
-            this.groupBox2.Location = new System.Drawing.Point(255, 233);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(236, 75);
-            this.groupBox2.TabIndex = 13;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Результат";
-            // 
-            // pbBrowse
-            // 
-            this.pbBrowse.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pbBrowse.Location = new System.Drawing.Point(6, 19);
-            this.pbBrowse.Name = "pbBrowse";
-            this.pbBrowse.Size = new System.Drawing.Size(43, 50);
-            this.pbBrowse.TabIndex = 0;
-            this.pbBrowse.TabStop = false;
+            this.btnPrev.Location = new System.Drawing.Point(55, 46);
+            this.btnPrev.Name = "btnPrev";
+            this.btnPrev.Size = new System.Drawing.Size(88, 23);
+            this.btnPrev.TabIndex = 2;
+            this.btnPrev.Text = "Предыдущий";
+            this.btnPrev.UseVisualStyleBackColor = true;
+            this.btnPrev.Click += new System.EventHandler(this.btnPrev_Click);
             // 
             // btnNext
             // 
@@ -177,15 +168,24 @@
             this.btnNext.UseVisualStyleBackColor = true;
             this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
             // 
-            // btnPrev
+            // pbBrowse
             // 
-            this.btnPrev.Location = new System.Drawing.Point(55, 46);
-            this.btnPrev.Name = "btnPrev";
-            this.btnPrev.Size = new System.Drawing.Size(88, 23);
-            this.btnPrev.TabIndex = 2;
-            this.btnPrev.Text = "Предыдущий";
-            this.btnPrev.UseVisualStyleBackColor = true;
-            this.btnPrev.Click += new System.EventHandler(this.btnPrev_Click);
+            this.pbBrowse.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pbBrowse.Location = new System.Drawing.Point(6, 19);
+            this.pbBrowse.Name = "pbBrowse";
+            this.pbBrowse.Size = new System.Drawing.Size(43, 50);
+            this.pbBrowse.TabIndex = 0;
+            this.pbBrowse.TabStop = false;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.lstResults);
+            this.groupBox2.Location = new System.Drawing.Point(255, 233);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(236, 75);
+            this.groupBox2.TabIndex = 13;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Результат";
             // 
             // FrmExample
             // 
@@ -211,8 +211,8 @@
             this.Shown += new System.EventHandler(this.FrmExample_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.pbDraw)).EndInit();
             this.groupBox1.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbBrowse)).EndInit();
+            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -14,15 +14,14 @@ namespace DynamicParserExample
 {
     public partial class FrmExample : Form
     {
-        const string StrRecognize = "Отмена",
-            StrRecognize1 = "Отмена.",
-            StrRecognize2 = "Отмена..",
+        const string StrRecognize = "Отмена   ",
+            StrRecognize1 = "Отмена.  ",
+            StrRecognize2 = "Отмена.. ",
             StrRecognize3 = "Отмена...",
-            StrError = "Ошибка",
             StrWordsFile = "Words";
 
         readonly string _strRecog, _strWordsPath = Path.Combine(Application.StartupPath, $"{StrWordsFile}.txt");
-        readonly Graphics _frontGrFront;
+        readonly Graphics _grFront;
         readonly Bitmap _frontBtm;
         readonly Pen _blackPen = new Pen(Color.Black, 2.0f);
         Thread _waitThread, _workThread;
@@ -33,13 +32,15 @@ namespace DynamicParserExample
         {
             InitializeComponent();
             _frontBtm = new Bitmap(pbDraw.Width, pbDraw.Height);
-            _frontGrFront = Graphics.FromImage(_frontBtm);
+            _grFront = Graphics.FromImage(_frontBtm);
             _strRecog = btnRecognize.Text;
+            btnNext_Click(null, null);
         }
 
         void pbDraw_MouseDown(object sender, MouseEventArgs e)
         {
             _draw = true;
+            _grFront.DrawRectangle(_blackPen, new Rectangle(e.X, e.Y, 1, 1));
         }
 
         void btnWordAdd_Click(object sender, EventArgs e)
@@ -130,103 +131,6 @@ namespace DynamicParserExample
             return btm;
         }
 
-        void Recognizing()
-        {
-            try
-            {
-                if (_workThread != null)
-                {
-                    try
-                    {
-                        Waiting();
-                        _workThread.Abort();
-                    }
-                    catch
-                    {
-                        //ignored
-                    }
-                    finally
-                    {
-                        _workThread = null;
-                    }
-                    return;
-                }
-                (_workThread = new Thread((ThreadStart)delegate
-               {
-                   try
-                   {
-                       try
-                       {
-                           List<ImageRect> images = new List<ImageRect>(FileOperations.Images);
-                           if (images.Count <= 0)
-                           {
-                               MessageBox.Show(this, @"Никаких образов не найдено. Нарисуйте какой-нибудь образ, затем сохраните его.");
-                               return;
-                           }
-                           Processor processor = new Processor(_frontBtm, "Main");
-                           SearchResults sr = processor.GetEqual((from ir in images select new Processor(ir.Bitm, ir.SymbolString)).ToArray());
-                           Region region = sr.AllMaps;
-                           WordSearcher ws = GetWords(region.Elements);
-                           foreach (Registered registered in region.Elements)
-                           {
-                               Bitmap btm = GetBitmap(registered.Region);
-                               foreach (Reg reg in registered.Register)
-                               {
-                                   foreach (Processor pr in reg.Procs)
-                                   {
-                                       string tag = pr.Tag;
-                                       if (tag.Length != 1)
-                                           continue;
-                                       FileOperations.Save(tag[0], btm);
-                                   }
-                               }
-                           }
-                           List<string> results = (from string s in lstWords.Items where ws.IsEqual(s) select s).ToList();
-                           Invoke((Action)delegate
-                          {
-                              try
-                              {
-                                  lstResults.Items.Clear();
-                                  foreach (string s in results)
-                                      lstResults.Items.Add(s);
-                              }
-                              catch (Exception ex)
-                              {
-                                  MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                                  btnRecognize.Text = StrError;
-                              }
-                          });
-                       }
-                       catch (Exception ex)
-                       {
-                           Invoke((Action)delegate
-                          {
-                              MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                          });
-                           Waiting();
-                           btnRecognize.Text = StrError;
-                       }
-                       finally
-                       {
-                           pbDraw.Refresh();
-                       }
-                   }
-                   catch
-                   {
-                       //ignored
-                   }
-               })
-                {
-                    IsBackground = true,
-                    Name = nameof(Recognizing)
-                }).Start();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-        }
-
         void pbDraw_MouseUp(object sender, MouseEventArgs e)
         {
             _draw = false;
@@ -239,10 +143,12 @@ namespace DynamicParserExample
                 List<ImageRect> lst = new List<ImageRect>(FileOperations.Images);
                 if (lst.Count <= 0)
                     return;
-                if (_currentImage >= lst.Count)
+                if (_currentImage >= lst.Count - 1)
                     _currentImage = 0;
-                if (_currentImage < lst.Count)
-                    pbBrowse.Image = lst[_currentImage++].Bitm;
+                else
+                    _currentImage++;
+                if (_currentImage < lst.Count && _currentImage >= 0)
+                    pbBrowse.Image = lst[_currentImage].Bitm;
             }
             catch (Exception ex)
             {
@@ -258,10 +164,10 @@ namespace DynamicParserExample
                 if (lst.Count <= 0)
                     return;
                 if (_currentImage <= 0)
-                    _currentImage = 0;
+                    _currentImage = lst.Count - 1;
                 else
                     _currentImage--;
-                if (_currentImage < lst.Count)
+                if (_currentImage < lst.Count && _currentImage >= 0)
                     pbBrowse.Image = lst[_currentImage].Bitm;
             }
             catch (Exception ex)
@@ -295,11 +201,94 @@ namespace DynamicParserExample
         {
             try
             {
-                Recognizing();
+                if (_workThread != null)
+                {
+                    try
+                    {
+                        Waiting();
+                        _workThread.Abort();
+                    }
+                    catch
+                    {
+                        //ignored
+                    }
+                    finally
+                    {
+                        _workThread = null;
+                    }
+                    return;
+                }
+            (_workThread = new Thread((ThreadStart)delegate
+            {
+                try
+                {
+                    try
+                    {
+                        Waiting();
+                        List<ImageRect> images = new List<ImageRect>(FileOperations.Images);
+                        if (images.Count <= 0)
+                        {
+                            MessageBox.Show(this, @"Никаких образов не найдено. Нарисуйте какой-нибудь образ, затем сохраните его.");
+                            return;
+                        }
+                        Processor processor = new Processor(_frontBtm, "Main");
+                        SearchResults sr = processor.GetEqual((from ir in images select new Processor(ir.Bitm, ir.SymbolString)).ToArray());
+                        Region region = sr.AllMaps;
+                        WordSearcher ws = GetWords(region.Elements);
+                        foreach (Registered registered in region.Elements)
+                        {
+                            Bitmap btm = GetBitmap(registered.Region);
+                            foreach (Reg reg in registered.Register)
+                                foreach (Processor pr in reg.Procs)
+                                {
+                                    string tag = pr.Tag;
+                                    if (tag.Length != 1)
+                                        continue;
+                                    FileOperations.Save(tag[0], btm);
+                                }
+                        }
+                        List<string> results = (from string s in lstWords.Items where ws.IsEqual(s) select s).ToList();
+                        Invoke((Action)delegate
+                        {
+                            try
+                            {
+                                lstResults.Items.Clear();
+                                foreach (string s in results)
+                                    lstResults.Items.Add(s);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                            }
+                        });
+                    }
+                    catch (ThreadAbortException) { }
+                    catch (Exception ex)
+                    {
+                        Invoke((Action)delegate
+                        {
+                            MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        });
+                        Waiting();
+                    }
+                    finally
+                    {
+                        pbDraw.Refresh();
+                    }
+                }
+                catch
+                {
+                    //ignored
+                }
+            })
+            {
+                IsBackground = true,
+                Name = "Recognizer"
+            }).Start();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.Message);
+                MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 
@@ -313,7 +302,7 @@ namespace DynamicParserExample
             try
             {
                 if (_draw)
-                    _frontGrFront.DrawRectangle(_blackPen, new Rectangle(e.X, e.Y, 1, 1));
+                    _grFront.DrawRectangle(_blackPen, new Rectangle(e.X, e.Y, 1, 1));
             }
             finally
             {
@@ -332,7 +321,7 @@ namespace DynamicParserExample
         {
             try
             {
-                _frontGrFront.Clear(Color.White);
+                _grFront.Clear(Color.White);
             }
             catch
             {
@@ -374,21 +363,21 @@ namespace DynamicParserExample
                               {
                                   btnRecognize.Text = StrRecognize;
                               });
-                               Thread.Sleep(100);
+                               Thread.Sleep(300);
                                break;
                            case 1:
                                Invoke((Action)delegate
                               {
                                   btnRecognize.Text = StrRecognize1;
                               });
-                               Thread.Sleep(100);
+                               Thread.Sleep(300);
                                break;
                            case 2:
                                Invoke((Action)delegate
                               {
                                   btnRecognize.Text = StrRecognize2;
                               });
-                               Thread.Sleep(100);
+                               Thread.Sleep(300);
                                break;
                            case 3:
                                Invoke((Action)delegate
@@ -396,25 +385,18 @@ namespace DynamicParserExample
                                   btnRecognize.Text = StrRecognize3;
                               });
                                k = -1;
-                               Thread.Sleep(100);
+                               Thread.Sleep(300);
                                break;
                            default:
                                k = 0;
                                break;
                        }
                }
-               catch (ThreadAbortException)
-               {
-                   Invoke((Action)delegate
-                   {
-                       btnRecognize.Text = StrRecognize;
-                   });
-               }
+               catch (ThreadAbortException) { }
                catch (Exception ex)
                {
                    Invoke((Action)delegate
                    {
-                       btnRecognize.Text = StrError;
                        MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                    });
                }

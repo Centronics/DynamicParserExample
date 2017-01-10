@@ -26,7 +26,15 @@ namespace DynamicParserExample
 
         void pbBox_MouseDown(object sender, MouseEventArgs e)
         {
-            _draw = true;
+            try
+            {
+                _draw = true;
+                _grFront.DrawRectangle(_blackPen, new Rectangle(e.X, e.Y, 1, 1));
+            }
+            finally
+            {
+                pbBox.Refresh();
+            }
         }
 
         void pbBox_MouseMove(object sender, MouseEventArgs e)
@@ -62,6 +70,19 @@ namespace DynamicParserExample
             catch (Exception ex)
             {
                 MessageBox.Show(this, ex.Message, @"Ошибка");
+            }
+        }
+
+        void FrmSymbol_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Enter:
+                    btnOK_Click(null, null);
+                    break;
+                case Keys.Escape:
+                    DialogResult = DialogResult.Cancel;
+                    break;
             }
         }
     }
