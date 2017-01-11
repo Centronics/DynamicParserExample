@@ -54,7 +54,7 @@
             this.pbDraw.Cursor = System.Windows.Forms.Cursors.Cross;
             this.pbDraw.Location = new System.Drawing.Point(12, 41);
             this.pbDraw.Name = "pbDraw";
-            this.pbDraw.Size = new System.Drawing.Size(43, 50);
+            this.pbDraw.Size = new System.Drawing.Size(57, 64);
             this.pbDraw.TabIndex = 0;
             this.pbDraw.TabStop = false;
             this.pbDraw.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbDraw_MouseDown);

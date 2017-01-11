@@ -12,24 +12,27 @@ namespace DynamicParserExample
         public Bitmap Bitm;
         public string Tag;
 
-        public string SymbolString => Symbol.HasValue ? new string(Symbol.Value, 1) : null;
-
-        char? Symbol
+        public string SymbolString
         {
             get
             {
-                try
-                {
-                    if (string.IsNullOrWhiteSpace(Tag) || Tag.Length < 3)
-                        return null;
-                    if (char.ToLower(Tag[0]) == 'b')
-                        return char.ToUpper(Tag[1]);
-                    return char.ToLower(Tag[0]) == 'm' ? char.ToLower(Tag[1]) : (char?)null;
-                }
-                catch
-                {
+                if (!IsSymbol)
                     return null;
-                }
+                string str = Tag.Substring(1);
+                if (str.Length < 2)
+                    throw new Exception($"{nameof(SymbolString)}: Имя файла задано неверно ({Tag}).");
+                return str;
+            }
+        }
+
+        public bool IsSymbol
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(Tag) || Tag.Length < 3)
+                    return false;
+                char ch = char.ToLower(Tag[0]);
+                return ch == 'm' || ch == 'b';
             }
         }
     }

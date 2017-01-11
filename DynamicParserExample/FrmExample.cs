@@ -189,12 +189,23 @@ namespace DynamicParserExample
             }
         }
 
-        static WordSearcher GetWords(IEnumerable<Registered> lstRegs)//МОЖНО СДЕЛАТЬ КОНСТРУКТОР
+        static WordSearcher GetWords(IEnumerable<Registered> lstRegs)
         {
-            if (lstRegs == null)
-                throw new ArgumentNullException(nameof(lstRegs), $@"{nameof(GetWords)}: Список зарегистрированных объектов не указан (null).");
-            return new WordSearcher(new List<string[]>(
-                    from registered in lstRegs where registered != null select (from proc in registered.Register from pr in proc.Procs select pr.Tag).ToArray()));
+            try
+            {
+                if (lstRegs == null)
+                    throw new ArgumentNullException(nameof(lstRegs),
+                        $@"{nameof(GetWords)}: Список зарегистрированных объектов не указан (null).");
+                return new WordSearcher(new List<string[]>(
+                    from registered in lstRegs
+                    where registered != null
+                    select
+                    (from proc in registered.Register from pr in proc.Procs select new string(pr.Tag[0], 1)).ToArray()));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"{nameof(GetWords)}: {ex.Message}");
+            }
         }
 
         void btnRecognize_Click(object sender, EventArgs e)
@@ -205,7 +216,6 @@ namespace DynamicParserExample
                 {
                     try
                     {
-                        Waiting();
                         _workThread.Abort();
                     }
                     catch
@@ -234,7 +244,6 @@ namespace DynamicParserExample
                         Processor processor = new Processor(_frontBtm, "Main");
                         SearchResults sr = processor.GetEqual((from ir in images select new Processor(ir.Bitm, ir.SymbolString)).ToArray());
                         Region region = sr.AllMaps;
-                        WordSearcher ws = GetWords(region.Elements);
                         foreach (Registered registered in region.Elements)
                         {
                             Bitmap btm = GetBitmap(registered.Region);
@@ -242,12 +251,30 @@ namespace DynamicParserExample
                                 foreach (Processor pr in reg.Procs)
                                 {
                                     string tag = pr.Tag;
-                                    if (tag.Length != 1)
+                                    if (tag.Length < 2)
                                         continue;
                                     FileOperations.Save(tag[0], btm);
                                 }
                         }
-                        List<string> results = (from string s in lstWords.Items where ws.IsEqual(s) select s).ToList();
+                        if (region.Count <= 0)
+                        {
+                            try
+                            {
+                                Invoke((Action)delegate
+                               {
+                                   MessageBox.Show(this,
+                                       $@"{nameof(btnRecognize_Click)}: Ничего не распознано. Это ошибка. Сообщите разработчику.",
+                                       @"Ошибка",
+                                       MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                               });
+                                return;
+                            }
+                            catch
+                            {
+                                //ignored
+                            }
+                        }
+                        List<string> results = (from string s in lstWords.Items where GetWords(region.Elements).IsEqual(s) select s).ToList();
                         Invoke((Action)delegate
                         {
                             try
@@ -258,27 +285,74 @@ namespace DynamicParserExample
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                                try
+                                {
+                                    Invoke((Action)delegate
+                                    {
+                                        MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                                    });
+                                }
+                                catch
+                                {
+                                    //ignored
+                                }
                             }
                         });
                     }
                     catch (ThreadAbortException) { }
                     catch (Exception ex)
                     {
-                        Invoke((Action)delegate
+                        try
                         {
-                            MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        });
-                        Waiting();
+                            Invoke((Action)delegate
+                           {
+                               MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK,
+                                   MessageBoxIcon.Exclamation);
+                           });
+                        }
+                        catch
+                        {
+                            //ignored
+                        }
                     }
                     finally
                     {
-                        pbDraw.Refresh();
+                        try
+                        {
+                            Waiting();
+                            Invoke((Action)delegate
+                            {
+                                try
+                                {
+                                    pbDraw.Refresh();
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                                }
+                            });
+                        }
+                        catch
+                        {
+                            //ignored
+                        }
                     }
                 }
-                catch
+                catch (ThreadAbortException) { }
+                catch (Exception ex)
                 {
-                    //ignored
+                    try
+                    {
+                        Invoke((Action)delegate
+                       {
+                           MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK,
+                               MessageBoxIcon.Exclamation);
+                       });
+                    }
+                    catch
+                    {
+                        //ignored
+                    }
                 }
             })
             {
@@ -395,17 +469,31 @@ namespace DynamicParserExample
                catch (ThreadAbortException) { }
                catch (Exception ex)
                {
-                   Invoke((Action)delegate
+                   try
                    {
-                       MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                   });
+                       Invoke((Action)delegate
+                      {
+                          MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                      });
+                   }
+                   catch
+                   {
+                       //ignored
+                   }
                }
                finally
                {
-                   Invoke((Action)delegate
+                   try
                    {
-                       btnRecognize.Text = _strRecog;
-                   });
+                       Invoke((Action)delegate
+                      {
+                          btnRecognize.Text = _strRecog;
+                      });
+                   }
+                   catch
+                   {
+                       //ignored
+                   }
                }
            })
             {
