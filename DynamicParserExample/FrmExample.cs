@@ -243,38 +243,8 @@ namespace DynamicParserExample
                         }
                         Processor processor = new Processor(_frontBtm, "Main");
                         SearchResults sr = processor.GetEqual((from ir in images select new Processor(ir.Bitm, ir.SymbolString)).ToArray());
-                        Region region = sr.AllMaps;
-                        foreach (Registered registered in region.Elements)
-                        {
-                            Bitmap btm = GetBitmap(registered.Region);
-                            foreach (Reg reg in registered.Register)
-                                foreach (Processor pr in reg.Procs)
-                                {
-                                    string tag = pr.Tag;
-                                    if (tag.Length < 2)
-                                        continue;
-                                    FileOperations.Save(tag[0], btm);
-                                }
-                        }
-                        if (region.Count <= 0)
-                        {
-                            try
-                            {
-                                Invoke((Action)delegate
-                               {
-                                   MessageBox.Show(this,
-                                       $@"{nameof(btnRecognize_Click)}: Ничего не распознано. Это ошибка. Сообщите разработчику.",
-                                       @"Ошибка",
-                                       MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                               });
-                                return;
-                            }
-                            catch
-                            {
-                                //ignored
-                            }
-                        }
-                        List<string> results = (from string s in lstWords.Items where GetWords(region.Elements).IsEqual(s) select s).ToList();
+                        string[] results =
+                            (from string word in lstWords.Items where !string.IsNullOrWhiteSpace(word) where sr.FindRelation(word) select word).ToArray();
                         Invoke((Action)delegate
                         {
                             try
