@@ -44,10 +44,16 @@ namespace DynamicParserExample
 
         public static IEnumerable<string> BitmapFiles => Directory.GetFiles(SearchPath, $"*.{ExtImg}");
 
-        public static IEnumerable<ImageRect> Images => BitmapFiles.Select(fname => new ImageRect
+        public static IEnumerable<ImageRect> Images => BitmapFiles.Select(fname =>
         {
-            Bitm = new Bitmap(fname),
-            Tag = Path.GetFileNameWithoutExtension(fname)
+            using (FileStream fs = new FileStream(fname, FileMode.Open, FileAccess.Read))
+            {
+                return new ImageRect
+                {
+                    Bitm = new Bitmap(fs),
+                    Tag = Path.GetFileNameWithoutExtension(fname)
+                };
+            }
         });
 
         static long? GetNumber(string str)

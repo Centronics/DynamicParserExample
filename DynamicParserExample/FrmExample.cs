@@ -8,7 +8,6 @@ using System.Threading;
 using System.Windows.Forms;
 using DynamicParser;
 using Processor = DynamicParser.Processor;
-using Region = DynamicParser.Region;
 
 namespace DynamicParserExample
 {
@@ -45,59 +44,36 @@ namespace DynamicParserExample
 
         void btnWordAdd_Click(object sender, EventArgs e)
         {
-            try
+            SafetyExecute(() =>
             {
                 if (string.IsNullOrWhiteSpace(txtWord.Text))
                     return;
                 lstWords.Items.Insert(0, txtWord.Text);
                 WordsSave();
                 txtWord.Text = string.Empty;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            finally
-            {
-                WordsLoad();
-            }
+            }, WordsLoad, null, true);
         }
 
         void btnWordRemove_Click(object sender, EventArgs e)
         {
-            try
+            SafetyExecute(() =>
             {
                 int index = lstWords.SelectedIndex;
                 if (index < 0)
                     return;
                 lstWords.Items.RemoveAt(index);
                 WordsSave();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            finally
-            {
-                WordsLoad();
-            }
+            }, WordsLoad, null, true);
         }
 
         void WordsSave()
         {
-            try
-            {
-                File.WriteAllLines(_strWordsPath, lstWords.Items.Cast<string>(), Encoding.UTF8);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+            SafetyExecute(() => File.WriteAllLines(_strWordsPath, lstWords.Items.Cast<string>(), Encoding.UTF8), null, null, true);
         }
 
         void WordsLoad()
         {
-            try
+            SafetyExecute(() =>
             {
                 lstWords.Items.Clear();
                 if (!File.Exists(_strWordsPath))
@@ -111,24 +87,7 @@ namespace DynamicParserExample
                         str = s.Substring(0, txtWord.MaxLength);
                     lstWords.Items.Add(str);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        }
-
-        Bitmap GetBitmap(Rectangle rect)
-        {
-            Bitmap btm = new Bitmap(rect.Width, rect.Height);
-            if (rect.Right > _frontBtm.Width)
-                throw new ArgumentException($@"{nameof(GetBitmap)}: Координата оси X выходит за пределы.", nameof(rect));
-            if (rect.Bottom > _frontBtm.Height)
-                throw new ArgumentException($@"{nameof(GetBitmap)}: Координата оси Y выходит за пределы.", nameof(rect));
-            for (int y1 = 0, y = rect.Y; y < rect.Bottom; y1++, y++)
-                for (int x1 = 0, x = rect.X; x < rect.Right; x1++, x++)
-                    btm.SetPixel(x1, y1, _frontBtm.GetPixel(x, y));
-            return btm;
+            }, null, null, true);
         }
 
         void pbDraw_MouseUp(object sender, MouseEventArgs e)
@@ -138,7 +97,7 @@ namespace DynamicParserExample
 
         void btnNext_Click(object sender, EventArgs e)
         {
-            try
+            SafetyExecute(() =>
             {
                 List<ImageRect> lst = new List<ImageRect>(FileOperations.Images);
                 if (lst.Count <= 0)
@@ -149,16 +108,12 @@ namespace DynamicParserExample
                     _currentImage++;
                 if (_currentImage < lst.Count && _currentImage >= 0)
                     pbBrowse.Image = lst[_currentImage].Bitm;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, ex.Message);
-            }
+            }, null, null, true);
         }
 
         void btnPrev_Click(object sender, EventArgs e)
         {
-            try
+            SafetyExecute(() =>
             {
                 List<ImageRect> lst = new List<ImageRect>(FileOperations.Images);
                 if (lst.Count <= 0)
@@ -169,171 +124,113 @@ namespace DynamicParserExample
                     _currentImage--;
                 if (_currentImage < lst.Count && _currentImage >= 0)
                     pbBrowse.Image = lst[_currentImage].Bitm;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, ex.Message);
-            }
+            }, null, null, true);
         }
 
         void btnSaveImage_Click(object sender, EventArgs e)
         {
-            try
+            SafetyExecute(() =>
             {
                 using (FrmSymbol fs = new FrmSymbol())
                     fs.ShowDialog();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, ex.Message);
-            }
+            }, null, null, true);
         }
 
-        static WordSearcher GetWords(IEnumerable<Registered> lstRegs)
+        void tmrThread_Tick(object sender, EventArgs e)
         {
-            try
+            if (_workThread?.IsAlive != true)
             {
-                if (lstRegs == null)
-                    throw new ArgumentNullException(nameof(lstRegs),
-                        $@"{nameof(GetWords)}: Список зарегистрированных объектов не указан (null).");
-                return new WordSearcher(new List<string[]>(
-                    from registered in lstRegs
-                    where registered != null
-                    select
-                    (from proc in registered.Register from pr in proc.Procs select new string(pr.Tag[0], 1)).ToArray()));
+                SafetyExecute(() => _waitThread?.Abort(), () => _waitThread = null);
+                return;
             }
-            catch (Exception ex)
-            {
-                throw new Exception($"{nameof(GetWords)}: {ex.Message}");
-            }
+            if (_workThread?.IsAlive == true && _waitThread?.IsAlive != true)
+                (_waitThread = new Thread((ThreadStart)delegate
+                {
+                    SafetyExecute(() =>
+                    {
+                        for (int k = 0; k < 4; k++)
+                            switch (k)
+                            {
+                                case 0:
+                                    InvokeFunction(() => btnRecognize.Text = StrRecognize);
+                                    Thread.Sleep(300);
+                                    break;
+                                case 1:
+                                    InvokeFunction(() => btnRecognize.Text = StrRecognize1);
+                                    Thread.Sleep(300);
+                                    break;
+                                case 2:
+                                    InvokeFunction(() => btnRecognize.Text = StrRecognize2);
+                                    Thread.Sleep(300);
+                                    break;
+                                case 3:
+                                    InvokeFunction(() => btnRecognize.Text = StrRecognize3);
+                                    k = -1;
+                                    Thread.Sleep(300);
+                                    break;
+                                default:
+                                    k = 0;
+                                    break;
+                            }
+                    }, () => InvokeFunction(() => btnRecognize.Text = _strRecog, null, true), null, true);
+                })
+                {
+                    IsBackground = true,
+                    Name = "WaitableTimer"
+                }).Start();
         }
 
         void btnRecognize_Click(object sender, EventArgs e)
         {
-            try
+            SafetyExecute(() =>
             {
                 if (_workThread != null)
                 {
+                    SafetyExecute(() => _workThread.Abort(), () => _workThread = null);
+                    return;
+                }
+                (_workThread = new Thread((ThreadStart)delegate
+                {
                     try
                     {
-                        _workThread.Abort();
-                    }
-                    catch
-                    {
-                        //ignored
+                        SafetyExecute(() =>
+                        {
+                            List<ImageRect> images = new List<ImageRect>(FileOperations.Images);
+                            if (images.Count <= 0)
+                            {
+                                InvokeFunction(
+                                    () =>
+                                        MessageBox.Show(this,
+                                            @"Никаких образов не найдено. Нарисуйте какой-нибудь образ, затем сохраните его."));
+                                return;
+                            }
+                            Processor processor = new Processor(_frontBtm, "Main");
+                            SearchResults sr =
+                                processor.GetEqual(
+                                    (from ir in images select new Processor(ir.Bitm, ir.SymbolString)).ToArray());
+                            string[] results =
+                            (from string word in lstWords.Items
+                             where !string.IsNullOrWhiteSpace(word)
+                             where sr.FindRelation(word)
+                             select word).ToArray();
+                            InvokeFunction(() =>
+                            {
+                                lstResults.Items.Clear();
+                                foreach (string s in results)
+                                    lstResults.Items.Add(s);
+                            }, null, true);
+                        }, () => InvokeFunction(() => pbDraw.Refresh(), null, true), null, true);
                     }
                     finally
                     {
                         _workThread = null;
                     }
-                    return;
-                }
-            (_workThread = new Thread((ThreadStart)delegate
-            {
-                try
+                })
                 {
-                    try
-                    {
-                        Waiting();
-                        List<ImageRect> images = new List<ImageRect>(FileOperations.Images);
-                        if (images.Count <= 0)
-                        {
-                            MessageBox.Show(this, @"Никаких образов не найдено. Нарисуйте какой-нибудь образ, затем сохраните его.");
-                            return;
-                        }
-                        Processor processor = new Processor(_frontBtm, "Main");
-                        SearchResults sr = processor.GetEqual((from ir in images select new Processor(ir.Bitm, ir.SymbolString)).ToArray());
-                        string[] results =
-                            (from string word in lstWords.Items where !string.IsNullOrWhiteSpace(word) where sr.FindRelation(word) select word).ToArray();
-                        Invoke((Action)delegate
-                        {
-                            try
-                            {
-                                lstResults.Items.Clear();
-                                foreach (string s in results)
-                                    lstResults.Items.Add(s);
-                            }
-                            catch (Exception ex)
-                            {
-                                try
-                                {
-                                    Invoke((Action)delegate
-                                    {
-                                        MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                                    });
-                                }
-                                catch
-                                {
-                                    //ignored
-                                }
-                            }
-                        });
-                    }
-                    catch (ThreadAbortException) { }
-                    catch (Exception ex)
-                    {
-                        try
-                        {
-                            Invoke((Action)delegate
-                           {
-                               MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK,
-                                   MessageBoxIcon.Exclamation);
-                           });
-                        }
-                        catch
-                        {
-                            //ignored
-                        }
-                    }
-                    finally
-                    {
-                        try
-                        {
-                            Waiting();
-                            Invoke((Action)delegate
-                            {
-                                try
-                                {
-                                    pbDraw.Refresh();
-                                }
-                                catch (Exception ex)
-                                {
-                                    MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                                }
-                            });
-                        }
-                        catch
-                        {
-                            //ignored
-                        }
-                    }
-                }
-                catch (ThreadAbortException) { }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        Invoke((Action)delegate
-                       {
-                           MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK,
-                               MessageBoxIcon.Exclamation);
-                       });
-                    }
-                    catch
-                    {
-                        //ignored
-                    }
-                }
-            })
-            {
-                IsBackground = true,
-                Name = "Recognizer"
-            }).Start();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
+                    IsBackground = true,
+                    Name = "Recognizer"
+                }).Start();
+            }, null, null, true);
         }
 
         void pbDraw_MouseLeave(object sender, EventArgs e)
@@ -343,15 +240,11 @@ namespace DynamicParserExample
 
         void pbDraw_MouseMove(object sender, MouseEventArgs e)
         {
-            try
+            SafetyExecute(() =>
             {
                 if (_draw)
                     _grFront.DrawRectangle(_blackPen, new Rectangle(e.X, e.Y, 1, 1));
-            }
-            finally
-            {
-                pbDraw.Refresh();
-            }
+            }, () => pbDraw.Refresh());
         }
 
         void FrmExample_Shown(object sender, EventArgs e)
@@ -363,113 +256,78 @@ namespace DynamicParserExample
 
         void btnClear_Click(object sender, EventArgs e)
         {
+            SafetyExecute(() => _grFront.Clear(Color.White), () => pbDraw.Refresh());
+        }
+
+        void InvokeFunction(Action func, Action catchAction = null, bool invokeErrorMessage = false)
+        {
+            if (func == null)
+                return;
             try
             {
-                _grFront.Clear(Color.White);
+                Invoke((Action)delegate
+               {
+                   try
+                   {
+                       func();
+                   }
+                   catch (ThreadAbortException) { }
+                   catch (Exception ex)
+                   {
+                       try
+                       {
+                           if (invokeErrorMessage)
+                               MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                           catchAction?.Invoke();
+                       }
+                       catch (ThreadAbortException) { }
+                       catch (Exception ex1)
+                       {
+                           if (invokeErrorMessage)
+                               MessageBox.Show(this, ex1.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                       }
+                   }
+               });
             }
             catch
             {
                 //ignored
             }
-            finally
-            {
-                pbDraw.Refresh();
-            }
         }
 
-        void Waiting()
+        void SafetyExecute(Action func, Action finallyAction = null, Action catchAction = null, bool invokeErrorMessage = false)
         {
-            if (_waitThread != null)
+            try
+            {
+                func?.Invoke();
+            }
+            catch (ThreadAbortException) { }
+            catch (Exception ex)
             {
                 try
                 {
-                    _waitThread.Abort();
+                    catchAction?.Invoke();
                 }
+                catch (ThreadAbortException) { }
                 catch
                 {
-                    //ignored
+                    if (invokeErrorMessage)
+                        InvokeFunction(() => MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
                 }
-                finally
-                {
-                    _waitThread = null;
-                }
-                return;
             }
-            (_waitThread = new Thread((ThreadStart)delegate
-           {
-               try
-               {
-                   for (int k = 0; k < 4; k++)
-                       switch (k)
-                       {
-                           case 0:
-                               Invoke((Action)delegate
-                              {
-                                  btnRecognize.Text = StrRecognize;
-                              });
-                               Thread.Sleep(300);
-                               break;
-                           case 1:
-                               Invoke((Action)delegate
-                              {
-                                  btnRecognize.Text = StrRecognize1;
-                              });
-                               Thread.Sleep(300);
-                               break;
-                           case 2:
-                               Invoke((Action)delegate
-                              {
-                                  btnRecognize.Text = StrRecognize2;
-                              });
-                               Thread.Sleep(300);
-                               break;
-                           case 3:
-                               Invoke((Action)delegate
-                              {
-                                  btnRecognize.Text = StrRecognize3;
-                              });
-                               k = -1;
-                               Thread.Sleep(300);
-                               break;
-                           default:
-                               k = 0;
-                               break;
-                       }
-               }
-               catch (ThreadAbortException) { }
-               catch (Exception ex)
-               {
-                   try
-                   {
-                       Invoke((Action)delegate
-                      {
-                          MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                      });
-                   }
-                   catch
-                   {
-                       //ignored
-                   }
-               }
-               finally
-               {
-                   try
-                   {
-                       Invoke((Action)delegate
-                      {
-                          btnRecognize.Text = _strRecog;
-                      });
-                   }
-                   catch
-                   {
-                       //ignored
-                   }
-               }
-           })
+            finally
             {
-                IsBackground = true,
-                Name = nameof(Waiting)
-            }).Start();
+                try
+                {
+                    finallyAction?.Invoke();
+                }
+                catch (ThreadAbortException) { }
+                catch (Exception ex)
+                {
+                    if (invokeErrorMessage)
+                        InvokeFunction(() => MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
+                }
+            }
         }
     }
 }

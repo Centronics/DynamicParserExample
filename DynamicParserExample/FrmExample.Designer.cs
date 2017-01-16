@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.pbDraw = new System.Windows.Forms.PictureBox();
             this.btnRecognize = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
@@ -42,6 +43,7 @@
             this.btnNext = new System.Windows.Forms.Button();
             this.pbBrowse = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.tmrThread = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pbDraw)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbBrowse)).BeginInit();
@@ -187,6 +189,11 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Результат";
             // 
+            // tmrThread
+            // 
+            this.tmrThread.Enabled = true;
+            this.tmrThread.Tick += new System.EventHandler(this.tmrThread_Tick);
+            // 
             // FrmExample
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -234,6 +241,7 @@
         private System.Windows.Forms.PictureBox pbBrowse;
         private System.Windows.Forms.Button btnPrev;
         private System.Windows.Forms.Button btnNext;
+        private System.Windows.Forms.Timer tmrThread;
     }
 }
 
