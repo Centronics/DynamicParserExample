@@ -207,7 +207,7 @@ namespace DynamicParserExample
                             Processor processor = new Processor(_frontBtm, "Main");
                             SearchResults sr =
                                 processor.GetEqual(
-                                    (from ir in images select new Processor(ir.Bitm, ir.SymbolString)).ToArray());
+                                    (from ir in images select new Processor(ir.ImageMap, ir.SymbolString)).ToArray());
                             string[] results =
                             (from string word in lstWords.Items
                              where !string.IsNullOrWhiteSpace(word)

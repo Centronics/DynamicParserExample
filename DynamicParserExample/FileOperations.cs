@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using DynamicProcessor;
 
 namespace DynamicParserExample
 {
@@ -33,6 +34,23 @@ namespace DynamicParserExample
                     return false;
                 char ch = char.ToLower(Tag[0]);
                 return ch == 'm' || ch == 'b';
+            }
+        }
+
+        public SignValue[,] ImageMap
+        {
+            get
+            {
+                SignValue[,] mas = new SignValue[Bitm.Width, Bitm.Height];
+                for (int y = 0; y < Bitm.Height; y++)
+                    for (int x = 0; x < Bitm.Width; x++)
+                    {
+                        Color col = Bitm.GetPixel(x, y);
+                        if (col.ToArgb() == 0)
+                            col = Color.White;
+                        mas[x, y] = new SignValue(col);
+                    }
+                return mas;
             }
         }
     }
