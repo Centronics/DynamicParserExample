@@ -106,8 +106,10 @@ namespace DynamicParserExample
                     _currentImage = 0;
                 else
                     _currentImage++;
-                if (_currentImage < lst.Count && _currentImage >= 0)
-                    pbBrowse.Image = lst[_currentImage].Bitm;
+                if (_currentImage >= lst.Count || _currentImage < 0) return;
+                ImageRect ir = lst[_currentImage];
+                pbBrowse.Image = ir.Bitm;
+                lblSymbolName.Text = ir.SymbolName;
             }, null, null, true);
         }
 
@@ -122,8 +124,10 @@ namespace DynamicParserExample
                     _currentImage = lst.Count - 1;
                 else
                     _currentImage--;
-                if (_currentImage < lst.Count && _currentImage >= 0)
-                    pbBrowse.Image = lst[_currentImage].Bitm;
+                if (_currentImage >= lst.Count || _currentImage < 0) return;
+                ImageRect ir = lst[_currentImage];
+                pbBrowse.Image = ir.Bitm;
+                lblSymbolName.Text = ir.SymbolName;
             }, null, null, true);
         }
 

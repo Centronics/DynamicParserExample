@@ -32,6 +32,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.btnOK = new System.Windows.Forms.Button();
             this.pbBox = new System.Windows.Forms.PictureBox();
+            this.btnClear = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -56,9 +57,9 @@
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(67, 42);
+            this.btnOK.Location = new System.Drawing.Point(67, 62);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(83, 32);
+            this.btnOK.Size = new System.Drawing.Size(83, 21);
             this.btnOK.TabIndex = 2;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
@@ -78,11 +79,22 @@
             this.pbBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbBox_MouseMove);
             this.pbBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pbBox_MouseUp);
             // 
+            // btnClear
+            // 
+            this.btnClear.Location = new System.Drawing.Point(67, 33);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(83, 21);
+            this.btnClear.TabIndex = 4;
+            this.btnClear.Text = "Очистить";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // 
             // FrmSymbol
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(167, 95);
+            this.Controls.Add(this.btnClear);
             this.Controls.Add(this.pbBox);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.label1);
@@ -92,6 +104,7 @@
             this.Name = "FrmSymbol";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FrmSymbol";
+            this.Shown += new System.EventHandler(this.FrmSymbol_Shown);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmSymbol_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.pbBox)).EndInit();
             this.ResumeLayout(false);
@@ -105,5 +118,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.PictureBox pbBox;
+        private System.Windows.Forms.Button btnClear;
     }
 }

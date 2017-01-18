@@ -61,7 +61,7 @@ namespace DynamicParserExample
             {
                 if (string.IsNullOrWhiteSpace(txtSymbol.Text))
                 {
-                    MessageBox.Show(this, @"Необходимо вписать название символа.");
+                    MessageBox.Show(this, @"Необходимо вписать название символа. Оно не может быть более одного знака и состоять из невидимых символов.");
                     return;
                 }
                 FileOperations.Save(txtSymbol.Text[0], _btmFront);
@@ -75,6 +75,7 @@ namespace DynamicParserExample
 
         void FrmSymbol_KeyDown(object sender, KeyEventArgs e)
         {
+            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (e.KeyCode)
             {
                 case Keys.Enter:
@@ -84,6 +85,23 @@ namespace DynamicParserExample
                     DialogResult = DialogResult.Cancel;
                     break;
             }
+        }
+
+        void btnClear_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                _grFront.Clear(Color.White);
+            }
+            finally
+            {
+                pbBox.Refresh();
+            }
+        }
+
+        void FrmSymbol_Shown(object sender, EventArgs e)
+        {
+            btnClear_Click(null, null);
         }
     }
 }

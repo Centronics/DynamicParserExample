@@ -44,6 +44,8 @@
             this.pbBrowse = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tmrThread = new System.Windows.Forms.Timer(this.components);
+            this.label1 = new System.Windows.Forms.Label();
+            this.lblSymbolName = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pbDraw)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbBrowse)).BeginInit();
@@ -87,9 +89,9 @@
             // lstResults
             // 
             this.lstResults.FormattingEnabled = true;
-            this.lstResults.Location = new System.Drawing.Point(9, 19);
+            this.lstResults.Location = new System.Drawing.Point(9, 16);
             this.lstResults.Name = "lstResults";
-            this.lstResults.Size = new System.Drawing.Size(221, 43);
+            this.lstResults.Size = new System.Drawing.Size(221, 69);
             this.lstResults.TabIndex = 4;
             // 
             // lstWords
@@ -97,7 +99,7 @@
             this.lstWords.FormattingEnabled = true;
             this.lstWords.Location = new System.Drawing.Point(255, 67);
             this.lstWords.Name = "lstWords";
-            this.lstWords.Size = new System.Drawing.Size(237, 160);
+            this.lstWords.Size = new System.Drawing.Size(237, 147);
             this.lstWords.TabIndex = 6;
             // 
             // btnWordAdd
@@ -130,9 +132,9 @@
             // 
             // btnSaveImage
             // 
-            this.btnSaveImage.Location = new System.Drawing.Point(167, 233);
+            this.btnSaveImage.Location = new System.Drawing.Point(167, 223);
             this.btnSaveImage.Name = "btnSaveImage";
-            this.btnSaveImage.Size = new System.Drawing.Size(82, 69);
+            this.btnSaveImage.Size = new System.Drawing.Size(82, 85);
             this.btnSaveImage.TabIndex = 11;
             this.btnSaveImage.Text = "Создать образ";
             this.btnSaveImage.UseVisualStyleBackColor = true;
@@ -140,19 +142,21 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.lblSymbolName);
+            this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.btnPrev);
             this.groupBox1.Controls.Add(this.btnNext);
             this.groupBox1.Controls.Add(this.pbBrowse);
-            this.groupBox1.Location = new System.Drawing.Point(12, 233);
+            this.groupBox1.Location = new System.Drawing.Point(12, 218);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(149, 75);
+            this.groupBox1.Size = new System.Drawing.Size(149, 90);
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Существующие образы";
             // 
             // btnPrev
             // 
-            this.btnPrev.Location = new System.Drawing.Point(55, 46);
+            this.btnPrev.Location = new System.Drawing.Point(55, 62);
             this.btnPrev.Name = "btnPrev";
             this.btnPrev.Size = new System.Drawing.Size(88, 23);
             this.btnPrev.TabIndex = 2;
@@ -162,7 +166,7 @@
             // 
             // btnNext
             // 
-            this.btnNext.Location = new System.Drawing.Point(55, 19);
+            this.btnNext.Location = new System.Drawing.Point(55, 35);
             this.btnNext.Name = "btnNext";
             this.btnNext.Size = new System.Drawing.Size(88, 23);
             this.btnNext.TabIndex = 1;
@@ -173,7 +177,7 @@
             // pbBrowse
             // 
             this.pbBrowse.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pbBrowse.Location = new System.Drawing.Point(6, 19);
+            this.pbBrowse.Location = new System.Drawing.Point(6, 35);
             this.pbBrowse.Name = "pbBrowse";
             this.pbBrowse.Size = new System.Drawing.Size(43, 50);
             this.pbBrowse.TabIndex = 0;
@@ -182,9 +186,9 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.lstResults);
-            this.groupBox2.Location = new System.Drawing.Point(255, 233);
+            this.groupBox2.Location = new System.Drawing.Point(255, 218);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(236, 75);
+            this.groupBox2.Size = new System.Drawing.Size(236, 90);
             this.groupBox2.TabIndex = 13;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Результат";
@@ -193,6 +197,24 @@
             // 
             this.tmrThread.Enabled = true;
             this.tmrThread.Tick += new System.EventHandler(this.tmrThread_Tick);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 19);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(60, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Название:";
+            // 
+            // lblSymbolName
+            // 
+            this.lblSymbolName.AutoSize = true;
+            this.lblSymbolName.Location = new System.Drawing.Point(63, 19);
+            this.lblSymbolName.Name = "lblSymbolName";
+            this.lblSymbolName.Size = new System.Drawing.Size(80, 13);
+            this.lblSymbolName.TabIndex = 4;
+            this.lblSymbolName.Text = "<Неизвестно>";
             // 
             // FrmExample
             // 
@@ -218,6 +240,7 @@
             this.Shown += new System.EventHandler(this.FrmExample_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.pbDraw)).EndInit();
             this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbBrowse)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -242,6 +265,8 @@
         private System.Windows.Forms.Button btnPrev;
         private System.Windows.Forms.Button btnNext;
         private System.Windows.Forms.Timer tmrThread;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblSymbolName;
     }
 }
 

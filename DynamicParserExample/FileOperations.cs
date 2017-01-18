@@ -26,7 +26,9 @@ namespace DynamicParserExample
             }
         }
 
-        public bool IsSymbol
+        public string SymbolName => new string(Tag[1], 1);
+
+        bool IsSymbol
         {
             get
             {
