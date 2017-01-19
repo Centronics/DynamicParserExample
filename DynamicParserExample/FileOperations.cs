@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 using DynamicProcessor;
 
@@ -11,7 +10,9 @@ namespace DynamicParserExample
     public struct ImageRect
     {
         public Bitmap Bitm;
-        public string Tag;
+        public string Tag, ImagePath;
+
+        public string SymbolName => new string(Tag[1], 1);
 
         public string SymbolString
         {
@@ -26,13 +27,14 @@ namespace DynamicParserExample
             }
         }
 
-        public string SymbolName => new string(Tag[1], 1);
-
-        bool IsSymbol
+        public bool IsSymbol
         {
             get
             {
                 if (string.IsNullOrWhiteSpace(Tag) || Tag.Length < 3)
+                    return false;
+                ulong ul;
+                if (!ulong.TryParse(Tag.Substring(2), out ul))
                     return false;
                 char ch = char.ToLower(Tag[0]);
                 return ch == 'm' || ch == 'b';
@@ -64,17 +66,26 @@ namespace DynamicParserExample
 
         public static IEnumerable<string> BitmapFiles => Directory.GetFiles(SearchPath, $"*.{ExtImg}");
 
-        public static IEnumerable<ImageRect> Images => BitmapFiles.Select(fname =>
+        public static IEnumerable<ImageRect> Images
         {
-            using (FileStream fs = new FileStream(fname, FileMode.Open, FileAccess.Read))
+            get
             {
-                return new ImageRect
+                foreach (string fname in BitmapFiles)
                 {
-                    Bitm = new Bitmap(fs),
-                    Tag = Path.GetFileNameWithoutExtension(fname)
-                };
+                    using (FileStream fs = new FileStream(fname, FileMode.Open, FileAccess.Read))
+                    {
+                        ImageRect ir = new ImageRect
+                        {
+                            Bitm = new Bitmap(fs),
+                            Tag = Path.GetFileNameWithoutExtension(fname),
+                            ImagePath = fname
+                        };
+                        if (ir.IsSymbol)
+                            yield return ir;
+                    }
+                }
             }
-        });
+        }
 
         static long? GetNumber(string str)
         {

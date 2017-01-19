@@ -44,6 +44,7 @@
             this.txtSymbol.Name = "txtSymbol";
             this.txtSymbol.Size = new System.Drawing.Size(18, 22);
             this.txtSymbol.TabIndex = 0;
+            this.txtSymbol.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtSymbol_KeyPress);
             // 
             // label1
             // 
@@ -105,7 +106,8 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FrmSymbol";
             this.Shown += new System.EventHandler(this.FrmSymbol_Shown);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmSymbol_KeyDown);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FrmSymbol_KeyPress);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FrmSymbol_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.pbBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

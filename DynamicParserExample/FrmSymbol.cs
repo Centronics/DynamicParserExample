@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -9,6 +10,7 @@ namespace DynamicParserExample
         readonly Pen _blackPen = new Pen(Color.Black, 2.0f);
         readonly Graphics _grFront;
         readonly Bitmap _btmFront;
+        readonly Stopwatch _sw = new Stopwatch();
         bool _draw;
 
         public FrmSymbol()
@@ -62,6 +64,7 @@ namespace DynamicParserExample
                 if (string.IsNullOrWhiteSpace(txtSymbol.Text))
                 {
                     MessageBox.Show(this, @"Необходимо вписать название символа. Оно не может быть более одного знака и состоять из невидимых символов.");
+                    _sw.Restart();
                     return;
                 }
                 FileOperations.Save(txtSymbol.Text[0], _btmFront);
@@ -70,20 +73,6 @@ namespace DynamicParserExample
             catch (Exception ex)
             {
                 MessageBox.Show(this, ex.Message, @"Ошибка");
-            }
-        }
-
-        void FrmSymbol_KeyDown(object sender, KeyEventArgs e)
-        {
-            // ReSharper disable once SwitchStatementMissingSomeCases
-            switch (e.KeyCode)
-            {
-                case Keys.Enter:
-                    btnOK_Click(null, null);
-                    break;
-                case Keys.Escape:
-                    DialogResult = DialogResult.Cancel;
-                    break;
             }
         }
 
@@ -102,6 +91,38 @@ namespace DynamicParserExample
         void FrmSymbol_Shown(object sender, EventArgs e)
         {
             btnClear_Click(null, null);
+            _sw.Restart();
+        }
+
+        void FrmSymbol_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (_sw.ElapsedMilliseconds < 1000)
+                return;
+            _sw.Stop();
+            // ReSharper disable once SwitchStatementMissingSomeCases
+            switch (e.KeyCode)
+            {
+                case Keys.Enter:
+                    btnOK_Click(null, null);
+                    break;
+                case Keys.Escape:
+                    DialogResult = DialogResult.Cancel;
+                    break;
+            }
+        }
+
+        void txtSymbol_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ((Keys)e.KeyChar == Keys.Enter || (Keys)e.KeyChar == Keys.Tab || (Keys)e.KeyChar == Keys.Escape ||
+                (Keys)e.KeyChar == Keys.Pause || (Keys)e.KeyChar == Keys.XButton1 || e.KeyChar == 15)
+                e.Handled = true;
+        }
+
+        void FrmSymbol_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ((Keys)e.KeyChar == Keys.Enter || (Keys)e.KeyChar == Keys.Tab || (Keys)e.KeyChar == Keys.Escape ||
+                (Keys)e.KeyChar == Keys.Pause || (Keys)e.KeyChar == Keys.XButton1 || e.KeyChar == 15)
+                e.Handled = true;
         }
     }
 }

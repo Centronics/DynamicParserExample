@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -21,17 +22,18 @@ namespace DynamicParserExample
 
         readonly string _strRecog, _strWordsPath = Path.Combine(Application.StartupPath, $"{StrWordsFile}.txt");
         readonly Graphics _grFront;
-        readonly Bitmap _frontBtm;
+        readonly Bitmap _btmFront;
         readonly Pen _blackPen = new Pen(Color.Black, 2.0f);
         Thread _waitThread, _workThread;
+        readonly Stopwatch _stopwatch = new Stopwatch();
         bool _draw;
         int _currentImage;
 
         public FrmExample()
         {
             InitializeComponent();
-            _frontBtm = new Bitmap(pbDraw.Width, pbDraw.Height);
-            _grFront = Graphics.FromImage(_frontBtm);
+            _btmFront = new Bitmap(pbDraw.Width, pbDraw.Height);
+            _grFront = Graphics.FromImage(_btmFront);
             _strRecog = btnRecognize.Text;
             btnNext_Click(null, null);
         }
@@ -101,7 +103,10 @@ namespace DynamicParserExample
             {
                 List<ImageRect> lst = new List<ImageRect>(FileOperations.Images);
                 if (lst.Count <= 0)
+                {
+                    pbBrowse.Image = new Bitmap(pbBrowse.Width, pbBrowse.Height);
                     return;
+                }
                 if (_currentImage >= lst.Count - 1)
                     _currentImage = 0;
                 else
@@ -119,7 +124,10 @@ namespace DynamicParserExample
             {
                 List<ImageRect> lst = new List<ImageRect>(FileOperations.Images);
                 if (lst.Count <= 0)
+                {
+                    pbBrowse.Image = new Bitmap(pbBrowse.Width, pbBrowse.Height);
                     return;
+                }
                 if (_currentImage <= 0)
                     _currentImage = lst.Count - 1;
                 else
@@ -128,6 +136,22 @@ namespace DynamicParserExample
                 ImageRect ir = lst[_currentImage];
                 pbBrowse.Image = ir.Bitm;
                 lblSymbolName.Text = ir.SymbolName;
+            }, null, null, true);
+        }
+
+        void btnDeleteImage_Click(object sender, EventArgs e)
+        {
+            SafetyExecute(() =>
+            {
+                List<ImageRect> lst = new List<ImageRect>(FileOperations.Images);
+                if (lst.Count <= 0)
+                {
+                    pbBrowse.Image = new Bitmap(pbBrowse.Width, pbBrowse.Height);
+                    return;
+                }
+                if (_currentImage >= lst.Count || _currentImage < 0) return;
+                File.Delete(lst[_currentImage].ImagePath);
+                btnPrev_Click(null, null);
             }, null, null, true);
         }
 
@@ -152,30 +176,58 @@ namespace DynamicParserExample
                 {
                     SafetyExecute(() =>
                     {
-                        for (int k = 0; k < 4; k++)
-                            switch (k)
-                            {
-                                case 0:
-                                    InvokeFunction(() => btnRecognize.Text = StrRecognize);
-                                    Thread.Sleep(300);
-                                    break;
-                                case 1:
-                                    InvokeFunction(() => btnRecognize.Text = StrRecognize1);
-                                    Thread.Sleep(300);
-                                    break;
-                                case 2:
-                                    InvokeFunction(() => btnRecognize.Text = StrRecognize2);
-                                    Thread.Sleep(300);
-                                    break;
-                                case 3:
-                                    InvokeFunction(() => btnRecognize.Text = StrRecognize3);
-                                    k = -1;
-                                    Thread.Sleep(300);
-                                    break;
-                                default:
-                                    k = 0;
-                                    break;
-                            }
+                        _stopwatch.Restart();
+                        try
+                        {
+                            for (int k = 0; k < 4; k++)
+                                switch (k)
+                                {
+                                    case 0:
+                                        InvokeFunction(() =>
+                                        {
+                                            btnRecognize.Text = StrRecognize;
+                                            lblElapsedTime.Text =
+                                                $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch.Elapsed.Seconds:00}";
+                                        });
+                                        Thread.Sleep(100);
+                                        break;
+                                    case 1:
+                                        InvokeFunction(() =>
+                                        {
+                                            btnRecognize.Text = StrRecognize1;
+                                            lblElapsedTime.Text =
+                                                $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch.Elapsed.Seconds:00}";
+                                        });
+                                        Thread.Sleep(100);
+                                        break;
+                                    case 2:
+                                        InvokeFunction(() =>
+                                        {
+                                            btnRecognize.Text = StrRecognize2;
+                                            lblElapsedTime.Text =
+                                                $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch.Elapsed.Seconds:00}";
+                                        });
+                                        Thread.Sleep(100);
+                                        break;
+                                    case 3:
+                                        InvokeFunction(() =>
+                                        {
+                                            btnRecognize.Text = StrRecognize3;
+                                            lblElapsedTime.Text =
+                                                $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch.Elapsed.Seconds:00}";
+                                        });
+                                        k = -1;
+                                        Thread.Sleep(100);
+                                        break;
+                                    default:
+                                        k = -1;
+                                        break;
+                                }
+                        }
+                        finally
+                        {
+                            _stopwatch.Stop();
+                        }
                     }, () => InvokeFunction(() => btnRecognize.Text = _strRecog, null, true), null, true);
                 })
                 {
@@ -202,13 +254,15 @@ namespace DynamicParserExample
                             List<ImageRect> images = new List<ImageRect>(FileOperations.Images);
                             if (images.Count <= 0)
                             {
-                                InvokeFunction(
-                                    () =>
-                                        MessageBox.Show(this,
-                                            @"Никаких образов не найдено. Нарисуйте какой-нибудь образ, затем сохраните его."));
+                                new Thread(() => InvokeFunction(() => MessageBox.Show(this,
+                                      @"Никаких образов не найдено. Нарисуйте какой-нибудь образ, затем сохраните его.")))
+                                {
+                                    IsBackground = true,
+                                    Name = "ImageNotFound"
+                                }.Start();
                                 return;
                             }
-                            Processor processor = new Processor(_frontBtm, "Main");
+                            Processor processor = new Processor(_btmFront, "Main");
                             SearchResults sr =
                                 processor.GetEqual(
                                     (from ir in images select new Processor(ir.ImageMap, ir.SymbolString)).ToArray());
@@ -237,6 +291,32 @@ namespace DynamicParserExample
             }, null, null, true);
         }
 
+        void FrmExample_KeyUp(object sender, KeyEventArgs e)
+        {
+            // ReSharper disable once SwitchStatementMissingSomeCases
+            switch (e.KeyCode)
+            {
+                case Keys.R:
+                    btnRecognize_Click(null, null);
+                    break;
+                case Keys.Escape:
+                    Application.Exit();
+                    break;
+            }
+        }
+
+        void txtWord_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                btnWordAdd_Click(null, null);
+        }
+
+        void lstWords_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+                btnWordRemove_Click(null, null);
+        }
+
         void pbDraw_MouseLeave(object sender, EventArgs e)
         {
             _draw = false;
@@ -253,7 +333,7 @@ namespace DynamicParserExample
 
         void FrmExample_Shown(object sender, EventArgs e)
         {
-            pbDraw.Image = _frontBtm;
+            pbDraw.Image = _btmFront;
             btnClear_Click(null, null);
             WordsLoad();
         }
