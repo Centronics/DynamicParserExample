@@ -189,6 +189,8 @@ namespace DynamicParserExample
                 {
                     _waitThread = null;
                     EnableButtons = true;
+                    _workThread = null;
+                    tmrThread.Enabled = false;
                 });
                 return;
             }
@@ -267,6 +269,7 @@ namespace DynamicParserExample
                     SafetyExecute(() => _workThread.Abort(), () => _workThread = null);
                     return;
                 }
+                tmrThread.Enabled = true;
                 (_workThread = new Thread((ThreadStart)delegate
                 {
                     SafetyExecute(() =>
