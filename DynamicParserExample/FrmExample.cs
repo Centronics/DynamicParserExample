@@ -38,6 +38,23 @@ namespace DynamicParserExample
             btnNext_Click(null, null);
         }
 
+        bool EnableButtons
+        {
+            set
+            {
+                InvokeFunction(() =>
+                {
+                    btnClear.Enabled = value;
+                    btnWordAdd.Enabled = value;
+                    btnWordRemove.Enabled = value;
+                    pbDraw.Enabled = value;
+                    txtWord.Enabled = value;
+                    btnSaveImage.Enabled = value;
+                    btnDeleteImage.Enabled = value;
+                });
+            }
+        }
+
         void pbDraw_MouseDown(object sender, MouseEventArgs e)
         {
             _draw = true;
@@ -168,7 +185,11 @@ namespace DynamicParserExample
         {
             if (_workThread?.IsAlive != true)
             {
-                SafetyExecute(() => _waitThread?.Abort(), () => _waitThread = null);
+                SafetyExecute(() => _waitThread?.Abort(), () =>
+                {
+                    _waitThread = null;
+                    EnableButtons = true;
+                });
                 return;
             }
             if (_workThread?.IsAlive == true && _waitThread?.IsAlive != true)
@@ -176,6 +197,7 @@ namespace DynamicParserExample
                 {
                     SafetyExecute(() =>
                     {
+                        EnableButtons = false;
                         _stopwatch.Restart();
                         try
                         {
@@ -240,49 +262,40 @@ namespace DynamicParserExample
         {
             SafetyExecute(() =>
             {
-                if (_workThread != null)
+                if (_workThread?.IsAlive == true)
                 {
                     SafetyExecute(() => _workThread.Abort(), () => _workThread = null);
                     return;
                 }
                 (_workThread = new Thread((ThreadStart)delegate
                 {
-                    try
+                    SafetyExecute(() =>
                     {
-                        SafetyExecute(() =>
+                        List<ImageRect> images = new List<ImageRect>(FileOperations.Images);
+                        if (images.Count <= 0)
                         {
-                            List<ImageRect> images = new List<ImageRect>(FileOperations.Images);
-                            if (images.Count <= 0)
+                            new Thread(() => InvokeFunction(() => MessageBox.Show(this,
+                                  @"Никаких образов не найдено. Нарисуйте какой-нибудь образ, затем сохраните его.")))
                             {
-                                new Thread(() => InvokeFunction(() => MessageBox.Show(this,
-                                      @"Никаких образов не найдено. Нарисуйте какой-нибудь образ, затем сохраните его.")))
-                                {
-                                    IsBackground = true,
-                                    Name = "ImageNotFound"
-                                }.Start();
-                                return;
-                            }
-                            Processor processor = new Processor(_btmFront, "Main");
-                            SearchResults sr =
-                                processor.GetEqual(
-                                    (from ir in images select new Processor(ir.ImageMap, ir.SymbolString)).ToArray());
-                            string[] results =
-                            (from string word in lstWords.Items
-                             where !string.IsNullOrWhiteSpace(word)
-                             where sr.FindRelation(word)
-                             select word).ToArray();
-                            InvokeFunction(() =>
-                            {
-                                lstResults.Items.Clear();
-                                foreach (string s in results)
-                                    lstResults.Items.Add(s);
-                            }, null, true);
-                        }, () => InvokeFunction(() => pbDraw.Refresh(), null, true), null, true);
-                    }
-                    finally
-                    {
-                        _workThread = null;
-                    }
+                                IsBackground = true,
+                                Name = "ImageNotFound"
+                            }.Start();
+                            return;
+                        }
+                        Processor processor = new Processor(_btmFront, "Main");
+                        SearchResults sr = processor.GetEqual((from ir in images select new Processor(ir.ImageMap, ir.SymbolString)).ToArray());
+                        string[] results =
+                        (from string word in lstWords.Items
+                         where !string.IsNullOrWhiteSpace(word)
+                         where sr.FindRelation(word)
+                         select word).ToArray();
+                        InvokeFunction(() =>
+                        {
+                            lstResults.Items.Clear();
+                            foreach (string s in results)
+                                lstResults.Items.Add(s);
+                        }, null, true);
+                    }, () => InvokeFunction(() => pbDraw.Refresh(), null, true), null, true);
                 })
                 {
                     IsBackground = true,
@@ -343,9 +356,9 @@ namespace DynamicParserExample
             SafetyExecute(() => _grFront.Clear(Color.White), () => pbDraw.Refresh());
         }
 
-        void InvokeFunction(Action func, Action catchAction = null, bool invokeErrorMessage = false)
+        void InvokeFunction(Action funcAction, Action catchAction = null, bool invokeErrorMessage = false)
         {
-            if (func == null)
+            if (funcAction == null)
                 return;
             try
             {
@@ -353,7 +366,7 @@ namespace DynamicParserExample
                {
                    try
                    {
-                       func();
+                       funcAction();
                    }
                    catch (ThreadAbortException) { }
                    catch (Exception ex)
@@ -379,11 +392,11 @@ namespace DynamicParserExample
             }
         }
 
-        void SafetyExecute(Action func, Action finallyAction = null, Action catchAction = null, bool invokeErrorMessage = false)
+        void SafetyExecute(Action funcAction, Action finallyAction = null, Action catchAction = null, bool invokeErrorMessage = false)
         {
             try
             {
-                func?.Invoke();
+                funcAction?.Invoke();
             }
             catch (ThreadAbortException) { }
             catch (Exception ex)
