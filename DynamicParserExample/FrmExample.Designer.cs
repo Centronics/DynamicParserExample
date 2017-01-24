@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.pbDraw = new System.Windows.Forms.PictureBox();
             this.btnRecognize = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
@@ -45,7 +44,6 @@
             this.btnNext = new System.Windows.Forms.Button();
             this.pbBrowse = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.tmrThread = new System.Windows.Forms.Timer(this.components);
             this.label2 = new System.Windows.Forms.Label();
             this.lblElapsedTime = new System.Windows.Forms.Label();
             this.btnDeleteImage = new System.Windows.Forms.Button();
@@ -218,11 +216,6 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Результаты:";
             // 
-            // tmrThread
-            // 
-            this.tmrThread.Enabled = true;
-            this.tmrThread.Tick += new System.EventHandler(this.tmrThread_Tick);
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -314,7 +307,6 @@
         private System.Windows.Forms.PictureBox pbBrowse;
         private System.Windows.Forms.Button btnPrev;
         private System.Windows.Forms.Button btnNext;
-        private System.Windows.Forms.Timer tmrThread;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblSymbolName;
         private System.Windows.Forms.Label label2;

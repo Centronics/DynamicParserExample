@@ -181,83 +181,83 @@ namespace DynamicParserExample
             }, null, null, true);
         }
 
-        void tmrThread_Tick(object sender, EventArgs e)
+        void WaitableTimer(bool enable)
         {
-            if (_workThread?.IsAlive != true)
+            if (!enable && _waitThread?.IsAlive == true)
             {
                 SafetyExecute(() => _waitThread?.Abort(), () =>
                 {
                     _waitThread = null;
                     EnableButtons = true;
-                    _workThread = null;
-                    tmrThread.Enabled = false;
                 });
                 return;
             }
-            if (_workThread?.IsAlive == true && _waitThread?.IsAlive != true)
-                (_waitThread = new Thread((ThreadStart)delegate
+            if (!enable)
+                return;
+            (_waitThread = new Thread((ThreadStart)delegate
+            {
+                SafetyExecute(() =>
                 {
-                    SafetyExecute(() =>
+                    _stopwatch.Restart();
+                    try
                     {
-                        EnableButtons = false;
-                        _stopwatch.Restart();
-                        try
-                        {
-                            for (int k = 0; k < 4; k++)
-                                switch (k)
-                                {
-                                    case 0:
-                                        InvokeFunction(() =>
-                                        {
-                                            btnRecognize.Text = StrRecognize;
-                                            lblElapsedTime.Text =
-                                                $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch.Elapsed.Seconds:00}";
-                                        });
-                                        Thread.Sleep(100);
-                                        break;
-                                    case 1:
-                                        InvokeFunction(() =>
-                                        {
-                                            btnRecognize.Text = StrRecognize1;
-                                            lblElapsedTime.Text =
-                                                $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch.Elapsed.Seconds:00}";
-                                        });
-                                        Thread.Sleep(100);
-                                        break;
-                                    case 2:
-                                        InvokeFunction(() =>
-                                        {
-                                            btnRecognize.Text = StrRecognize2;
-                                            lblElapsedTime.Text =
-                                                $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch.Elapsed.Seconds:00}";
-                                        });
-                                        Thread.Sleep(100);
-                                        break;
-                                    case 3:
-                                        InvokeFunction(() =>
-                                        {
-                                            btnRecognize.Text = StrRecognize3;
-                                            lblElapsedTime.Text =
-                                                $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch.Elapsed.Seconds:00}";
-                                        });
-                                        k = -1;
-                                        Thread.Sleep(100);
-                                        break;
-                                    default:
-                                        k = -1;
-                                        break;
-                                }
-                        }
-                        finally
-                        {
-                            _stopwatch.Stop();
-                        }
-                    }, () => InvokeFunction(() => btnRecognize.Text = _strRecog, null, true), null, true);
-                })
-                {
-                    IsBackground = true,
-                    Name = "WaitableTimer"
-                }).Start();
+                        #region Switcher
+                        for (int k = 0; k < 4; k++)
+                            switch (k)
+                            {
+                                case 0:
+                                    InvokeFunction(() =>
+                                    {
+                                        btnRecognize.Text = StrRecognize;
+                                        lblElapsedTime.Text =
+                                            $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch.Elapsed.Seconds:00}";
+                                    });
+                                    Thread.Sleep(100);
+                                    break;
+                                case 1:
+                                    InvokeFunction(() =>
+                                    {
+                                        btnRecognize.Text = StrRecognize1;
+                                        lblElapsedTime.Text =
+                                            $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch.Elapsed.Seconds:00}";
+                                    });
+                                    Thread.Sleep(100);
+                                    break;
+                                case 2:
+                                    InvokeFunction(() =>
+                                    {
+                                        btnRecognize.Text = StrRecognize2;
+                                        lblElapsedTime.Text =
+                                            $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch.Elapsed.Seconds:00}";
+                                    });
+                                    Thread.Sleep(100);
+                                    break;
+                                case 3:
+                                    InvokeFunction(() =>
+                                    {
+                                        btnRecognize.Text = StrRecognize3;
+                                        lblElapsedTime.Text =
+                                            $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch.Elapsed.Seconds:00}";
+                                    });
+                                    k = -1;
+                                    Thread.Sleep(100);
+                                    break;
+                                default:
+                                    k = -1;
+                                    break;
+                            }
+                        #endregion
+                    }
+                    finally
+                    {
+                        _stopwatch.Stop();
+                    }
+                }, () => InvokeFunction(() => btnRecognize.Text = _strRecog, null, true), null, true);
+            })
+            {
+                IsBackground = true,
+                Name = nameof(WaitableTimer)
+            }).Start();
         }
 
         void btnRecognize_Click(object sender, EventArgs e)
@@ -269,20 +269,16 @@ namespace DynamicParserExample
                     SafetyExecute(() => _workThread.Abort(), () => _workThread = null);
                     return;
                 }
-                tmrThread.Enabled = true;
+                EnableButtons = false;
                 (_workThread = new Thread((ThreadStart)delegate
                 {
                     SafetyExecute(() =>
                     {
+                        WaitableTimer(true);
                         List<ImageRect> images = new List<ImageRect>(FileOperations.Images);
                         if (images.Count <= 0)
                         {
-                            new Thread(() => InvokeFunction(() => MessageBox.Show(this,
-                                  @"Никаких образов не найдено. Нарисуйте какой-нибудь образ, затем сохраните его.")))
-                            {
-                                IsBackground = true,
-                                Name = "ImageNotFound"
-                            }.Start();
+                            MessageInOtherThread(@"Никаких образов не найдено. Нарисуйте какой-нибудь образ, затем сохраните его.");
                             return;
                         }
                         Processor processor = new Processor(_btmFront, "Main");
@@ -298,7 +294,7 @@ namespace DynamicParserExample
                             foreach (string s in results)
                                 lstResults.Items.Add(s);
                         }, null, true);
-                    }, () => InvokeFunction(() => pbDraw.Refresh(), null, true), null, true);
+                    }, () => WaitableTimer(false), null, true);
                 })
                 {
                     IsBackground = true,
@@ -428,6 +424,23 @@ namespace DynamicParserExample
                         InvokeFunction(() => MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
                 }
             }
+        }
+
+        void MessageInOtherThread(string message)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+                return;
+            SafetyExecute(() =>
+            {
+                new Thread((ThreadStart)delegate
+               {
+                   InvokeFunction(() => MessageBox.Show(this, message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
+               })
+                {
+                    IsBackground = true,
+                    Name = @"Message"
+                }.Start();
+            });
         }
     }
 }
