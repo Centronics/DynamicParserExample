@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -7,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using DynamicParser;
 using Processor = DynamicParser.Processor;
 
 namespace DynamicParserExample
@@ -281,16 +281,17 @@ namespace DynamicParserExample
                             MessageInOtherThread(@"Никаких образов не найдено. Нарисуйте какой-нибудь образ, затем сохраните его.");
                             return;
                         }
-                        Processor processor = new Processor(_btmFront, "Main");
-                        SearchResults sr = processor.GetEqual((from ir in images select new Processor(ir.ImageMap, ir.SymbolString)).ToArray());
-                        string[] results =
-                        (from string word in lstWords.Items
-                         where !string.IsNullOrWhiteSpace(word)
-                         where sr.FindRelation(word)
-                         select word).ToArray();
+                        ConcurrentBag<string> results = new Processor(_btmFront, "Main").
+                            GetEqual((from ir in images select new Processor(ir.ImageMap, ir.SymbolString)).ToArray()).FindRelation(lstWords.Items);
+                        if ((results?.Count ?? 0) <= 0)
+                        {
+                            MessageInOtherThread(@"Никаких образов не распознано.");
+                            return;
+                        }
                         InvokeFunction(() =>
                         {
                             lstResults.Items.Clear();
+                            if (results == null) return;
                             foreach (string s in results)
                                 lstResults.Items.Add(s);
                         }, null, true);
