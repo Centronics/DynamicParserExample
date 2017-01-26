@@ -9,35 +9,46 @@ namespace DynamicParserExample
 {
     public struct ImageRect
     {
-        public Bitmap Bitm;
-        public string Tag, ImagePath;
+        public const string ExtImg = "bmp";
+        public static string SearchPath { get; } = Application.StartupPath;
+        static IEnumerable<string> BitmapFiles => Directory.GetFiles(SearchPath, $"*.{ExtImg}");
 
-        public string SymbolName => new string(Tag[1], 1);
+        public Bitmap Bitm { get; }
+        public string Tag { get; }
+        public string ImagePath { get; }
 
-        public string SymbolString
+        public ImageRect(Bitmap btm, string tag, string imagePath)
         {
-            get
-            {
-                if (!IsSymbol)
-                    return null;
-                string str = Tag.Substring(1);
-                if (str.Length < 2)
-                    throw new Exception($"{nameof(SymbolString)}: Имя файла задано неверно ({Tag}).");
-                return str;
-            }
+            if (btm == null)
+                throw new ArgumentNullException(nameof(btm), $@"{nameof(ImageRect)}: {nameof(btm)} = null.");
+            if (string.IsNullOrWhiteSpace(imagePath))
+                throw new ArgumentNullException(nameof(imagePath), $@"{nameof(ImageRect)}: {nameof(imagePath)} = null.");
+            Bitm = btm;
+            Tag = tag;
+            ImagePath = imagePath;
         }
+
+        public string SymbolString => IsSymbol ? Tag.Substring(1) : null;
+
+        public string SymbolName => IsSymbol ? new string(Tag[1], 1) : null;
+
+        public char? Symbol => IsSymbol ? char.ToUpper(Tag[1]) : (char?)null;
 
         public bool IsSymbol
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(Tag) || Tag.Length < 3)
-                    return false;
-                ulong ul;
-                if (!ulong.TryParse(Tag.Substring(2), out ul))
-                    return false;
-                char ch = char.ToLower(Tag[0]);
-                return ch == 'm' || ch == 'b';
+                ulong? number;
+                return NameParser(out number) && number.HasValue;
+            }
+        }
+
+        public ulong? Number
+        {
+            get
+            {
+                ulong? number;
+                return NameParser(out number) ? number : null;
             }
         }
 
@@ -57,63 +68,65 @@ namespace DynamicParserExample
                 return mas;
             }
         }
-    }
 
-    public sealed class FileOperations
-    {
-        const string ExtImg = "bmp";
-        static readonly string SearchPath = Application.StartupPath;
-
-        public static IEnumerable<string> BitmapFiles => Directory.GetFiles(SearchPath, $"*.{ExtImg}");
+        bool NameParser(out ulong? number)
+        {
+            number = null;
+            if (string.IsNullOrWhiteSpace(Tag) || Tag.Length < 3)
+                return false;
+            char ch = char.ToUpper(Tag[0]);
+            if (ch != 'M' && ch != 'B')
+                return false;
+            ulong ul;
+            if (!ulong.TryParse(Tag.Substring(2), out ul)) return false;
+            number = ul;
+            return true;
+        }
 
         public static IEnumerable<ImageRect> Images
         {
             get
             {
                 foreach (string fname in BitmapFiles)
-                {
                     using (FileStream fs = new FileStream(fname, FileMode.Open, FileAccess.Read))
                     {
-                        ImageRect ir = new ImageRect
-                        {
-                            Bitm = new Bitmap(fs),
-                            Tag = Path.GetFileNameWithoutExtension(fname),
-                            ImagePath = fname
-                        };
+                        ImageRect ir = new ImageRect(new Bitmap(fs), Path.GetFileNameWithoutExtension(fname), fname);
                         if (ir.IsSymbol)
                             yield return ir;
                     }
-                }
             }
         }
+    }
 
-        static long? GetNumber(string str)
-        {
-            long number;
-            long.TryParse(str, out number);
-            return number;
-        }
-
+    public sealed class FileOperations
+    {
         static string NewFileName(char name)
         {
-            long fileNumber = 0;
-            foreach (string fname in BitmapFiles)
+            ImageRect? imageRect = null;
             {
-                string fn = Path.GetFileNameWithoutExtension(fname);
-                if (string.IsNullOrWhiteSpace(fn) || fn.Length < 3) continue;
-                if (fn[1] != name)
-                    continue;
-                fn = fn.Substring(2);
-                long? number = GetNumber(fn);
-                if (number == null)
-                    continue;
-                long r = number.Value;
-                if (r < 0 || fileNumber >= r) continue;
-                fileNumber = r;
+                char nm = char.ToUpper(name);
+                ulong max = 0;
+                foreach (ImageRect ir in ImageRect.Images)
+                {
+                    if (ir.Symbol != nm)
+                        continue;
+                    if (ir.Number == null)
+                        continue;
+                    if (ir.Number < max)
+                        continue;
+                    max = ir.Number.Value;
+                    imageRect = ir;
+                }
             }
-            char symbol = char.IsUpper(name) ? 'b' : 'm';
-            string path = $@"{SearchPath}\{symbol}{name}{fileNumber + 1}";
-            return $"{path}.{ExtImg}";
+            char prefix = char.IsUpper(name) ? 'b' : 'm';
+            // ReSharper disable once MergeSequentialChecks
+            if (imageRect != null && imageRect.Value.Number != null)
+            {
+                string path = $@"{ImageRect.SearchPath}\{prefix}{name}{imageRect.Value.Number.Value + 1}";
+                return $"{path}.{ImageRect.ExtImg}";
+            }
+            string pathEmpty = $@"{ImageRect.SearchPath}\{prefix}{name}0";
+            return $"{pathEmpty}.{ImageRect.ExtImg}";
         }
 
         public static void Save(char name, Bitmap btm)

@@ -118,7 +118,7 @@ namespace DynamicParserExample
         {
             SafetyExecute(() =>
             {
-                List<ImageRect> lst = new List<ImageRect>(FileOperations.Images);
+                List<ImageRect> lst = new List<ImageRect>(ImageRect.Images);
                 if (lst.Count <= 0)
                 {
                     pbBrowse.Image = new Bitmap(pbBrowse.Width, pbBrowse.Height);
@@ -139,7 +139,7 @@ namespace DynamicParserExample
         {
             SafetyExecute(() =>
             {
-                List<ImageRect> lst = new List<ImageRect>(FileOperations.Images);
+                List<ImageRect> lst = new List<ImageRect>(ImageRect.Images);
                 if (lst.Count <= 0)
                 {
                     pbBrowse.Image = new Bitmap(pbBrowse.Width, pbBrowse.Height);
@@ -160,7 +160,7 @@ namespace DynamicParserExample
         {
             SafetyExecute(() =>
             {
-                List<ImageRect> lst = new List<ImageRect>(FileOperations.Images);
+                List<ImageRect> lst = new List<ImageRect>(ImageRect.Images);
                 if (lst.Count <= 0)
                 {
                     pbBrowse.Image = new Bitmap(pbBrowse.Width, pbBrowse.Height);
@@ -275,7 +275,7 @@ namespace DynamicParserExample
                     SafetyExecute(() =>
                     {
                         WaitableTimer(true);
-                        List<ImageRect> images = new List<ImageRect>(FileOperations.Images);
+                        List<ImageRect> images = new List<ImageRect>(ImageRect.Images);
                         if (images.Count <= 0)
                         {
                             MessageInOtherThread(@"Никаких образов не найдено. Нарисуйте какой-нибудь образ, затем сохраните его.");
