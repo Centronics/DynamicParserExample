@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace DynamicParserExample
@@ -11,6 +12,7 @@ namespace DynamicParserExample
         readonly Graphics _grFront;
         readonly Bitmap _btmFront;
         readonly Stopwatch _sw = new Stopwatch();
+        public ImageRect LastImage { get; private set; }
         bool _draw;
 
         public FrmSymbol()
@@ -22,6 +24,11 @@ namespace DynamicParserExample
         }
 
         void pbBox_MouseUp(object sender, MouseEventArgs e)
+        {
+            _draw = false;
+        }
+
+        void pbBox_MouseLeave(object sender, EventArgs e)
         {
             _draw = false;
         }
@@ -46,11 +53,6 @@ namespace DynamicParserExample
             RunFunction(() => RunFunction(() => pbBox.Refresh()));
         }
 
-        void pbBox_MouseLeave(object sender, EventArgs e)
-        {
-            _draw = false;
-        }
-
         void btnOK_Click(object sender, EventArgs e)
         {
             RunFunction(() =>
@@ -61,7 +63,7 @@ namespace DynamicParserExample
                     _sw.Restart();
                     return;
                 }
-                ImageRect.Save(txtSymbol.Text[0], _btmFront);
+                LastImage = ImageRect.Save(txtSymbol.Text[0], _btmFront);
                 DialogResult = DialogResult.OK;
             });
         }

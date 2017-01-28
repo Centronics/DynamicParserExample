@@ -176,16 +176,17 @@ namespace DynamicParserExample
             SafetyExecute(() =>
             {
                 using (FrmSymbol fs = new FrmSymbol())
-                    fs.ShowDialog();
+                {
+                    if (fs.ShowDialog() != DialogResult.OK) return;
+                    pbBrowse.Image = fs.LastImage.Bitm;
+                    lblSymbolName.Text = fs.LastImage.SymbolName;
+                }
             }, RefreshImagesCount, null, true);
         }
 
         void RefreshImagesCount()
         {
-            InvokeFunction(() =>
-            {
-                txtImagesCount.Text = ImageRect.Images.LongCount().ToString();
-            }, null, true);
+            InvokeFunction(() => txtImagesCount.Text = ImageRect.Images.LongCount().ToString(), null, true);
         }
 
         void WaitableTimer(bool enable)

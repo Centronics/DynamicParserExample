@@ -42,12 +42,17 @@ namespace DynamicParserExample
             IsSymbol = true;
         }
 
-        public static void Save(char name, Bitmap btm)
+        public static ImageRect Save(char name, Bitmap btm)
         {
             if (btm == null)
                 throw new ArgumentNullException(nameof(btm), $@"{nameof(Save)}: Сохраняемое изображение не указано.");
-            using (FileStream fs = new FileStream(NewFileName(name), FileMode.Create, FileAccess.ReadWrite))
+            string path = NewFileName(name);
+            using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.ReadWrite))
                 btm.Save(fs, ImageFormat.Bmp);
+            ImageRect ir = new ImageRect(btm, Path.GetFileNameWithoutExtension(path), path);
+            if (!ir.IsSymbol)
+                throw new Exception($"{nameof(Save)}: Неизвестная ошибка при сохранении изображения.");
+            return ir;
         }
 
         public SignValue[,] ImageMap
