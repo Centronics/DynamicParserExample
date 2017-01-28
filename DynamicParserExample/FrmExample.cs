@@ -121,6 +121,7 @@ namespace DynamicParserExample
                 if (lst.Count <= 0)
                 {
                     pbBrowse.Image = new Bitmap(pbBrowse.Width, pbBrowse.Height);
+                    MessageBox.Show(this, @"Образы отсутствуют. Для их добавления и распознавания необходимо создать искомые образы, нажав кнопку 'Создать образ', затем добавить искомое слово, которое так или иначе можно составить из названий искомых образов. Затем необходимо нарисовать его в поле исходного изображения. Далее нажать кнопку 'Распознать'.", @"Уведомление", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
                 if (_currentImage >= lst.Count - 1)
