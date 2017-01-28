@@ -18,9 +18,10 @@ namespace DynamicParserExample
             StrRecognize1 = "Отмена.  ",
             StrRecognize2 = "Отмена.. ",
             StrRecognize3 = "Отмена...",
-            StrWordsFile = "Words";
+            StrWordsFile = "Words",
+            ImagesNoExists = @"Образы отсутствуют. Для их добавления и распознавания необходимо создать искомые образы, нажав кнопку 'Создать образ', затем добавить искомое слово, которое так или иначе можно составить из названий искомых образов. Затем необходимо нарисовать его в поле исходного изображения. Далее нажать кнопку 'Распознать'.";
 
-        readonly string _strRecog, _strWordsPath = Path.Combine(Application.StartupPath, $"{StrWordsFile}.txt");
+        readonly string _strRecog, _strWordsPath = Path.Combine(Application.StartupPath, $"{StrWordsFile}.txt"), _unknownSymbolName;
         readonly Graphics _grFront;
         readonly Bitmap _btmFront;
         readonly Pen _blackPen = new Pen(Color.Black, 2.0f);
@@ -35,6 +36,7 @@ namespace DynamicParserExample
             _btmFront = new Bitmap(pbDraw.Width, pbDraw.Height);
             _grFront = Graphics.FromImage(_btmFront);
             _strRecog = btnRecognize.Text;
+            _unknownSymbolName = lblSymbolName.Text;
         }
 
         bool EnableButtons
@@ -113,6 +115,12 @@ namespace DynamicParserExample
             _draw = false;
         }
 
+        void SymbolBrowseClear()
+        {
+            lblSymbolName.Text = _unknownSymbolName;
+            pbBrowse.Image = new Bitmap(pbBrowse.Width, pbBrowse.Height);
+        }
+
         void btnNext_Click(object sender, EventArgs e)
         {
             SafetyExecute(() =>
@@ -121,7 +129,8 @@ namespace DynamicParserExample
                 if (lst.Count <= 0)
                 {
                     pbBrowse.Image = new Bitmap(pbBrowse.Width, pbBrowse.Height);
-                    MessageBox.Show(this, @"Образы отсутствуют. Для их добавления и распознавания необходимо создать искомые образы, нажав кнопку 'Создать образ', затем добавить искомое слово, которое так или иначе можно составить из названий искомых образов. Затем необходимо нарисовать его в поле исходного изображения. Далее нажать кнопку 'Распознать'.", @"Уведомление", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    SymbolBrowseClear();
+                    MessageBox.Show(this, ImagesNoExists, @"Уведомление", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
                 if (_currentImage >= lst.Count - 1)
@@ -143,6 +152,8 @@ namespace DynamicParserExample
                 if (lst.Count <= 0)
                 {
                     pbBrowse.Image = new Bitmap(pbBrowse.Width, pbBrowse.Height);
+                    SymbolBrowseClear();
+                    MessageBox.Show(this, ImagesNoExists, @"Уведомление", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
                 if (_currentImage <= 0)
@@ -287,14 +298,19 @@ namespace DynamicParserExample
                         List<ImageRect> images = new List<ImageRect>(ImageRect.Images);
                         if (images.Count <= 0)
                         {
-                            MessageInOtherThread(@"Никаких образов не найдено. Нарисуйте какой-нибудь образ, затем сохраните его.");
+                            MessageInOtherThread(@"Образы отсутствуют. Нарисуйте какой-нибудь образ, затем сохраните его.");
+                            return;
+                        }
+                        if (lstWords.Items.Count <= 0)
+                        {
+                            MessageInOtherThread(@"Слова отсутствуют. Добавьте какое-нибудь слово, название которого можно составить из одного или нескольких образов.");
                             return;
                         }
                         ConcurrentBag<string> results = new Processor(_btmFront, "Main").
                             GetEqual((from ir in images select new Processor(ir.ImageMap, ir.SymbolString)).ToArray()).FindRelation(lstWords.Items);
                         if ((results?.Count ?? 0) <= 0)
                         {
-                            MessageInOtherThread(@"Никаких образов не распознано.");
+                            MessageInOtherThread(@"Распознанные образы отсутствуют. Отсутствуют слова или образы.");
                             return;
                         }
                         InvokeFunction(() =>
