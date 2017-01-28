@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.pbDraw = new System.Windows.Forms.PictureBox();
             this.btnRecognize = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
@@ -40,16 +41,20 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.lblSymbolName = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.btnDeleteImage = new System.Windows.Forms.Button();
             this.btnPrev = new System.Windows.Forms.Button();
             this.btnNext = new System.Windows.Forms.Button();
             this.pbBrowse = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.lblElapsedTime = new System.Windows.Forms.Label();
-            this.btnDeleteImage = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.txtImagesCount = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.tmrImagesCount = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pbDraw)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbBrowse)).BeginInit();
@@ -151,6 +156,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.txtImagesCount);
+            this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.lblSymbolName);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.btnDeleteImage);
@@ -183,6 +190,16 @@
             this.label1.TabIndex = 3;
             this.label1.Text = "Название:";
             // 
+            // btnDeleteImage
+            // 
+            this.btnDeleteImage.Location = new System.Drawing.Point(149, 62);
+            this.btnDeleteImage.Name = "btnDeleteImage";
+            this.btnDeleteImage.Size = new System.Drawing.Size(114, 23);
+            this.btnDeleteImage.TabIndex = 9;
+            this.btnDeleteImage.Text = "Удалить";
+            this.btnDeleteImage.UseVisualStyleBackColor = true;
+            this.btnDeleteImage.Click += new System.EventHandler(this.btnDeleteImage_Click);
+            // 
             // btnPrev
             // 
             this.btnPrev.Location = new System.Drawing.Point(55, 62);
@@ -214,6 +231,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.lstResults);
             this.groupBox2.Location = new System.Drawing.Point(281, 126);
             this.groupBox2.Name = "groupBox2";
@@ -239,16 +257,6 @@
             this.lblElapsedTime.Size = new System.Drawing.Size(49, 13);
             this.lblElapsedTime.TabIndex = 15;
             this.lblElapsedTime.Text = "00:00:00";
-            // 
-            // btnDeleteImage
-            // 
-            this.btnDeleteImage.Location = new System.Drawing.Point(149, 62);
-            this.btnDeleteImage.Name = "btnDeleteImage";
-            this.btnDeleteImage.Size = new System.Drawing.Size(114, 23);
-            this.btnDeleteImage.TabIndex = 9;
-            this.btnDeleteImage.Text = "Удалить";
-            this.btnDeleteImage.UseVisualStyleBackColor = true;
-            this.btnDeleteImage.Click += new System.EventHandler(this.btnDeleteImage_Click);
             // 
             // label3
             // 
@@ -287,6 +295,38 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Искомые слова";
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(149, 19);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(40, 13);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "Всего:";
+            // 
+            // txtImagesCount
+            // 
+            this.txtImagesCount.Location = new System.Drawing.Point(193, 15);
+            this.txtImagesCount.Name = "txtImagesCount";
+            this.txtImagesCount.ReadOnly = true;
+            this.txtImagesCount.Size = new System.Drawing.Size(68, 20);
+            this.txtImagesCount.TabIndex = 13;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(145, 16);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(96, 52);
+            this.label5.TabIndex = 8;
+            this.label5.Text = "Результаты отоб-\r\nражаются только\r\nдля имеющихся\r\nслов.";
+            // 
+            // tmrImagesCount
+            // 
+            this.tmrImagesCount.Enabled = true;
+            this.tmrImagesCount.Interval = 1000;
+            this.tmrImagesCount.Tick += new System.EventHandler(this.tmrImagesCount_Tick);
+            // 
             // FrmExample
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -310,6 +350,7 @@
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbBrowse)).EndInit();
             this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -342,6 +383,10 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.TextBox txtImagesCount;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Timer tmrImagesCount;
     }
 }
 
