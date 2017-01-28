@@ -51,7 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileOperations.cs" />
+    <Compile Include="ImageRect.cs" />
     <Compile Include="FrmExample.cs">
       <SubType>Form</SubType>
     </Compile>

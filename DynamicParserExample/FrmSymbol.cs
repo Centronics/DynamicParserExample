@@ -67,7 +67,7 @@ namespace DynamicParserExample
                     _sw.Restart();
                     return;
                 }
-                FileOperations.Save(txtSymbol.Text[0], _btmFront);
+                ImageRect.Save(txtSymbol.Text[0], _btmFront);
                 DialogResult = DialogResult.OK;
             }
             catch (Exception ex)
