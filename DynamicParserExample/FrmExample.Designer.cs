@@ -37,23 +37,23 @@
             this.btnWordAdd = new System.Windows.Forms.Button();
             this.btnWordRemove = new System.Windows.Forms.Button();
             this.txtWord = new System.Windows.Forms.TextBox();
-            this.btnSaveImage = new System.Windows.Forms.Button();
+            this.btnImageSave = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.txtImagesCount = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.lblSymbolName = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.btnDeleteImage = new System.Windows.Forms.Button();
+            this.btnImageDelete = new System.Windows.Forms.Button();
             this.btnPrev = new System.Windows.Forms.Button();
             this.btnNext = new System.Windows.Forms.Button();
             this.pbBrowse = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.lblElapsedTime = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.txtImagesCount = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.tmrImagesCount = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pbDraw)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -144,15 +144,15 @@
             this.txtWord.Tag = "";
             this.txtWord.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtWord_KeyUp);
             // 
-            // btnSaveImage
+            // btnImageSave
             // 
-            this.btnSaveImage.Location = new System.Drawing.Point(149, 35);
-            this.btnSaveImage.Name = "btnSaveImage";
-            this.btnSaveImage.Size = new System.Drawing.Size(114, 23);
-            this.btnSaveImage.TabIndex = 8;
-            this.btnSaveImage.Text = "Создать образ";
-            this.btnSaveImage.UseVisualStyleBackColor = true;
-            this.btnSaveImage.Click += new System.EventHandler(this.btnSaveImage_Click);
+            this.btnImageSave.Location = new System.Drawing.Point(149, 35);
+            this.btnImageSave.Name = "btnImageSave";
+            this.btnImageSave.Size = new System.Drawing.Size(114, 23);
+            this.btnImageSave.TabIndex = 8;
+            this.btnImageSave.Text = "Создать образ";
+            this.btnImageSave.UseVisualStyleBackColor = true;
+            this.btnImageSave.Click += new System.EventHandler(this.btnImageSave_Click);
             // 
             // groupBox1
             // 
@@ -160,9 +160,9 @@
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.lblSymbolName);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.btnDeleteImage);
+            this.groupBox1.Controls.Add(this.btnImageDelete);
             this.groupBox1.Controls.Add(this.btnPrev);
-            this.groupBox1.Controls.Add(this.btnSaveImage);
+            this.groupBox1.Controls.Add(this.btnImageSave);
             this.groupBox1.Controls.Add(this.btnNext);
             this.groupBox1.Controls.Add(this.pbBrowse);
             this.groupBox1.Location = new System.Drawing.Point(8, 126);
@@ -171,6 +171,23 @@
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Искомые образы букв";
+            // 
+            // txtImagesCount
+            // 
+            this.txtImagesCount.Location = new System.Drawing.Point(193, 15);
+            this.txtImagesCount.Name = "txtImagesCount";
+            this.txtImagesCount.ReadOnly = true;
+            this.txtImagesCount.Size = new System.Drawing.Size(68, 20);
+            this.txtImagesCount.TabIndex = 13;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(149, 19);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(40, 13);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "Всего:";
             // 
             // lblSymbolName
             // 
@@ -190,15 +207,15 @@
             this.label1.TabIndex = 3;
             this.label1.Text = "Название:";
             // 
-            // btnDeleteImage
+            // btnImageDelete
             // 
-            this.btnDeleteImage.Location = new System.Drawing.Point(149, 62);
-            this.btnDeleteImage.Name = "btnDeleteImage";
-            this.btnDeleteImage.Size = new System.Drawing.Size(114, 23);
-            this.btnDeleteImage.TabIndex = 9;
-            this.btnDeleteImage.Text = "Удалить";
-            this.btnDeleteImage.UseVisualStyleBackColor = true;
-            this.btnDeleteImage.Click += new System.EventHandler(this.btnDeleteImage_Click);
+            this.btnImageDelete.Location = new System.Drawing.Point(149, 62);
+            this.btnImageDelete.Name = "btnImageDelete";
+            this.btnImageDelete.Size = new System.Drawing.Size(114, 23);
+            this.btnImageDelete.TabIndex = 9;
+            this.btnImageDelete.Text = "Удалить";
+            this.btnImageDelete.UseVisualStyleBackColor = true;
+            this.btnImageDelete.Click += new System.EventHandler(this.btnImageDelete_Click);
             // 
             // btnPrev
             // 
@@ -239,6 +256,15 @@
             this.groupBox2.TabIndex = 6;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Результаты";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(145, 16);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(96, 52);
+            this.label5.TabIndex = 8;
+            this.label5.Text = "Результаты отоб-\r\nражаются только\r\nдля имеющихся\r\nслов.";
             // 
             // label2
             // 
@@ -295,32 +321,6 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Искомые слова";
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(149, 19);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(40, 13);
-            this.label4.TabIndex = 12;
-            this.label4.Text = "Всего:";
-            // 
-            // txtImagesCount
-            // 
-            this.txtImagesCount.Location = new System.Drawing.Point(193, 15);
-            this.txtImagesCount.Name = "txtImagesCount";
-            this.txtImagesCount.ReadOnly = true;
-            this.txtImagesCount.Size = new System.Drawing.Size(68, 20);
-            this.txtImagesCount.TabIndex = 13;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(145, 16);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(96, 52);
-            this.label5.TabIndex = 8;
-            this.label5.Text = "Результаты отоб-\r\nражаются только\r\nдля имеющихся\r\nслов.";
-            // 
             // tmrImagesCount
             // 
             this.tmrImagesCount.Enabled = true;
@@ -369,7 +369,7 @@
         private System.Windows.Forms.Button btnWordAdd;
         private System.Windows.Forms.Button btnWordRemove;
         private System.Windows.Forms.TextBox txtWord;
-        private System.Windows.Forms.Button btnSaveImage;
+        private System.Windows.Forms.Button btnImageSave;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.PictureBox pbBrowse;
@@ -379,7 +379,7 @@
         private System.Windows.Forms.Label lblSymbolName;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label lblElapsedTime;
-        private System.Windows.Forms.Button btnDeleteImage;
+        private System.Windows.Forms.Button btnImageDelete;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox4;
