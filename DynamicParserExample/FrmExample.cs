@@ -32,11 +32,19 @@ namespace DynamicParserExample
 
         public FrmExample()
         {
-            InitializeComponent();
-            _btmFront = new Bitmap(pbDraw.Width, pbDraw.Height);
-            _grFront = Graphics.FromImage(_btmFront);
-            _strRecog = btnRecognize.Text;
-            _unknownSymbolName = lblSymbolName.Text;
+            try
+            {
+                InitializeComponent();
+                _btmFront = new Bitmap(pbDraw.Width, pbDraw.Height);
+                _grFront = Graphics.FromImage(_btmFront);
+                _strRecog = btnRecognize.Text;
+                _unknownSymbolName = lblSymbolName.Text;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($@"{ex.Message}{Environment.NewLine}Программа будет завершена.", @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Process.GetCurrentProcess().Kill();
+            }
         }
 
         bool EnableButtons
