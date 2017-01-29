@@ -81,7 +81,10 @@ namespace DynamicParserExample
             SafetyExecute(() =>
             {
                 if (string.IsNullOrWhiteSpace(txtWord.Text) || WordExist(txtWord.Text))
+                {
+                    txtWord.Text = string.Empty;
                     return;
+                }
                 lstWords.Items.Insert(0, txtWord.Text);
                 WordsSave();
                 txtWord.Text = string.Empty;
@@ -116,7 +119,7 @@ namespace DynamicParserExample
                     return;
                 foreach (string s in File.ReadAllLines(_strWordsPath, Encoding.UTF8))
                 {
-                    if (string.IsNullOrWhiteSpace(s))
+                    if (string.IsNullOrWhiteSpace(s) || WordExist(s))
                         continue;
                     string str = s;
                     if (s.Length > txtWord.MaxLength)
