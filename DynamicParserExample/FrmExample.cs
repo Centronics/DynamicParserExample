@@ -28,7 +28,7 @@ namespace DynamicParserExample
         Thread _waitThread, _workThread;
         readonly Stopwatch _stopwatch = new Stopwatch();
         bool _draw;
-        int _currentImage;
+        int _currentImage, _selectedIndex = -1;
 
         public FrmExample()
         {
@@ -100,6 +100,7 @@ namespace DynamicParserExample
                 int index = lstWords.SelectedIndex;
                 if (index < 0)
                     return;
+                _selectedIndex = index;
                 lstWords.Items.RemoveAt(index);
                 WordsSave();
             }, WordsLoad, null, true);
@@ -126,8 +127,11 @@ namespace DynamicParserExample
                         str = s.Substring(0, txtWord.MaxLength);
                     lstWords.Items.Add(str);
                 }
+                if (_selectedIndex < 0 || lstWords.Items.Count <= 0) return;
+                lstWords.SetSelected(_selectedIndex >= lstWords.Items.Count ? lstWords.Items.Count - 1 : _selectedIndex, true);
             }, () =>
             {
+                _selectedIndex = -1;
                 btnWordRemove.Enabled = lstWords.Items.Count > 0;
                 if (lstWords.Items.Count <= 0)
                     File.Delete(_strWordsPath);
