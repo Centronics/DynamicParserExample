@@ -344,7 +344,7 @@ namespace DynamicParserExample
                         }
                         if (lstWords.Items.Count <= 0)
                         {
-                            MessageInOtherThread(@"Слова отсутствуют. Добавьте какое-нибудь слово, название которого можно составить из одного или нескольких образов.");
+                            MessageInOtherThread(@"Слова отсутствуют. Добавьте какое-нибудь слово, которое можно составить из одного или нескольких образов.");
                             return;
                         }
                         if (!IsPainting)
