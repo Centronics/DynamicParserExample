@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -10,9 +9,8 @@ namespace DynamicParserExample
         readonly Pen _blackPen = new Pen(Color.Black, 2.0f);
         readonly Graphics _grFront;
         readonly Bitmap _btmFront;
-        readonly Stopwatch _sw = new Stopwatch();
         public ImageRect LastImage { get; private set; }
-        bool _draw;
+        bool _draw, _timedOut;
 
         public FrmSymbol()
         {
@@ -59,7 +57,8 @@ namespace DynamicParserExample
                 if (string.IsNullOrWhiteSpace(txtSymbol.Text))
                 {
                     MessageBox.Show(this, @"Необходимо вписать название символа. Оно не может быть более одного знака и состоять из невидимых символов.");
-                    _sw.Restart();
+                    tmrPressWait.Enabled = true;
+                    _timedOut = false;
                     return;
                 }
                 LastImage = ImageRect.Save(txtSymbol.Text[0], _btmFront);
@@ -78,7 +77,7 @@ namespace DynamicParserExample
             RunFunction(() =>
             {
                 btnClear_Click(null, null);
-                _sw.Restart();
+                tmrPressWait.Enabled = true;
             });
         }
 
@@ -86,9 +85,8 @@ namespace DynamicParserExample
         {
             RunFunction(() =>
             {
-                if (_sw.ElapsedMilliseconds < 1000)
+                if (!_timedOut)
                     return;
-                _sw.Stop();
                 // ReSharper disable once SwitchStatementMissingSomeCases
                 switch (e.KeyCode)
                 {
@@ -121,6 +119,12 @@ namespace DynamicParserExample
                     (Keys)e.KeyChar == Keys.Pause || (Keys)e.KeyChar == Keys.XButton1 || e.KeyChar == 15)
                     e.Handled = true;
             });
+        }
+
+        void tmrPressWait_Tick(object sender, EventArgs e)
+        {
+            _timedOut = true;
+            tmrPressWait.Enabled = false;
         }
 
         void RunFunction(Action act)

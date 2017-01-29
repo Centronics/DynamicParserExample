@@ -28,11 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.txtSymbol = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btnOK = new System.Windows.Forms.Button();
             this.pbBox = new System.Windows.Forms.PictureBox();
             this.btnClear = new System.Windows.Forms.Button();
+            this.tmrPressWait = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pbBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -90,6 +92,11 @@
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
+            // tmrPressWait
+            // 
+            this.tmrPressWait.Interval = 1000;
+            this.tmrPressWait.Tick += new System.EventHandler(this.tmrPressWait_Tick);
+            // 
             // FrmSymbol
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -121,5 +128,6 @@
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.PictureBox pbBox;
         private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Timer tmrPressWait;
     }
 }
