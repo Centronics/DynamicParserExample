@@ -83,7 +83,7 @@
             this.btnRecognize.Name = "btnRecognize";
             this.btnRecognize.Size = new System.Drawing.Size(160, 23);
             this.btnRecognize.TabIndex = 0;
-            this.btnRecognize.Text = "Распознать (R)";
+            this.btnRecognize.Text = "Распознать";
             this.btnRecognize.UseVisualStyleBackColor = true;
             this.btnRecognize.Click += new System.EventHandler(this.btnRecognize_Click);
             // 
@@ -142,6 +142,7 @@
             this.txtWord.Size = new System.Drawing.Size(113, 20);
             this.txtWord.TabIndex = 2;
             this.txtWord.Tag = "";
+            this.txtWord.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtWord_KeyPress);
             this.txtWord.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtWord_KeyUp);
             // 
             // btnImageSave

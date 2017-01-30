@@ -395,9 +395,6 @@ namespace DynamicParserExample
             // ReSharper disable once SwitchStatementMissingSomeCases
             switch (e.KeyCode)
             {
-                case Keys.R:
-                    btnRecognize_Click(null, null);
-                    break;
                 case Keys.Escape:
                     Application.Exit();
                     break;
@@ -408,6 +405,12 @@ namespace DynamicParserExample
         {
             if (e.KeyCode == Keys.Enter)
                 btnWordAdd_Click(null, null);
+        }
+
+        void txtWord_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ((Keys)e.KeyChar == Keys.Enter || (Keys)e.KeyChar == Keys.Tab || (Keys)e.KeyChar == Keys.Pause || (Keys)e.KeyChar == Keys.XButton1 || e.KeyChar == 15)
+                e.Handled = true;
         }
 
         void lstWords_KeyUp(object sender, KeyEventArgs e)
