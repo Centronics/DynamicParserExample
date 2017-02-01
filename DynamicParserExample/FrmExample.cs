@@ -369,6 +369,7 @@ namespace DynamicParserExample
                         }
                         ConcurrentBag<string> results = new Processor(_btmFront, "Main").
                             GetEqual((from ir in images select new Processor(ir.ImageMap, ir.SymbolString)).ToArray()).FindRelation(lstWords.Items);
+                        InvokeFunction(() => lstResults.Items.Clear());
                         if ((results?.Count ?? 0) <= 0)
                         {
                             MessageInOtherThread(@"Распознанные образы отсутствуют. Отсутствуют слова или образы.");
@@ -376,7 +377,6 @@ namespace DynamicParserExample
                         }
                         InvokeFunction(() =>
                         {
-                            lstResults.Items.Clear();
                             if (results == null) return;
                             foreach (string s in results)
                                 lstResults.Items.Add(s);
