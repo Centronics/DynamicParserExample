@@ -12,25 +12,115 @@ using Processor = DynamicParser.Processor;
 
 namespace DynamicParserExample
 {
+    /// <summary>
+    /// Класс основной формы приложения.
+    /// </summary>
     public partial class FrmExample : Form
     {
-        const string StrRecognize = "Отмена   ",
-            StrRecognize1 = "Отмена.  ",
-            StrRecognize2 = "Отмена.. ",
-            StrRecognize3 = "Отмена...",
-            StrWordsFile = "Words",
-            ImagesNoExists = @"Образы отсутствуют. Для их добавления и распознавания необходимо создать искомые образы, нажав кнопку 'Создать образ', затем добавить искомое слово, которое так или иначе можно составить из названий искомых образов. Затем необходимо нарисовать его в поле исходного изображения. Далее нажать кнопку 'Распознать'.";
+        /// <summary>
+        /// Надпись на кнопке "Распознать".
+        /// </summary>
+        const string StrRecognize = "Ждите   ";
 
-        readonly string _strRecog, _strWordsPath = Path.Combine(Application.StartupPath, $"{StrWordsFile}.txt"), _unknownSymbolName,
-            _strGrpResults, _strGrpWords;
+        /// <summary>
+        /// Надпись на кнопке "Распознать".
+        /// </summary>
+        const string StrRecognize1 = "Ждите.  ";
+
+        /// <summary>
+        /// Надпись на кнопке "Распознать".
+        /// </summary>
+        const string StrRecognize2 = "Ждите.. ";
+
+        /// <summary>
+        /// Надпись на кнопке "Распознать".
+        /// </summary>
+        const string StrRecognize3 = "Ждите...";
+
+        /// <summary>
+        /// Имя файла с искомыми словами.
+        /// </summary>
+        const string StrWordsFile = "Words";
+
+        /// <summary>
+        /// Текст ошибки в случае, если отсутствуют образы для поиска (распознавания).
+        /// </summary>
+        const string ImagesNoExists = @"Образы отсутствуют. Для их добавления и распознавания необходимо создать искомые образы, нажав кнопку 'Создать образ', затем добавить искомое слово, которое так или иначе можно составить из названий искомых образов. Затем необходимо нарисовать его в поле исходного изображения. Далее нажать кнопку 'Распознать'.";
+
+        /// <summary>
+        /// Текст кнопки "Распознать". Сохраняет исходное значение свойства <see cref="Button.Text"/> кнопки <see cref="btnRecognize"/>.
+        /// </summary>
+        readonly string _strRecog;
+
+        /// <summary>
+        /// Строка пути сохранения/загрузки файла, содержащего искомые слова.
+        /// </summary>
+        readonly string _strWordsPath = Path.Combine(Application.StartupPath, $"{StrWordsFile}.txt");
+
+        /// <summary>
+        /// Содержит изначальное значение поля "Название" искомого образа буквы. 
+        /// </summary>
+        readonly string _unknownSymbolName;
+
+        /// <summary>
+        /// Хранит значение свойства <see cref="GroupBox.Text"/> объекта <see cref="grpResults"/>.
+        /// </summary>
+        readonly string _strGrpResults;
+
+        /// <summary>
+        /// Хранит значение свойства <see cref="GroupBox.Text"/> объекта <see cref="grpWords"/>.
+        /// </summary>
+        readonly string _strGrpWords;
+
+        /// <summary>
+        /// Объект для рисования в окне создания распознаваемого изображения.
+        /// </summary>
         readonly Graphics _grFront;
-        readonly Bitmap _btmFront;
-        readonly Pen _blackPen = new Pen(Color.Black, 2.0f);
-        Thread _waitThread, _workThread;
-        readonly Stopwatch _stopwatch = new Stopwatch();
-        bool _draw;
-        int _currentImage, _selectedIndex = -1;
 
+        /// <summary>
+        /// Изображение, которое выводится в окне создания распознаваемого изображения.
+        /// </summary>
+        readonly Bitmap _btmFront;
+
+        /// <summary>
+        /// Задаёт цвет и ширину для рисования в окне создания распознаваемого изображения.
+        /// </summary>
+        readonly Pen _blackPen = new Pen(Color.Black, 2.0f);
+
+        /// <summary>
+        /// Поток, работающий в режиме ожидания окончания процедуры распознавания.
+        /// </summary>
+        Thread _waitThread;
+
+        /// <summary>
+        /// Поток, отвечающий за выполнение процедуры распознавания.
+        /// </summary>
+        Thread _workThread;
+
+        /// <summary>
+        /// Таймер для измерения времени, затраченного на распознавание.
+        /// </summary>
+        readonly Stopwatch _stopwatch = new Stopwatch();
+
+        /// <summary>
+        /// Определяет, разрешён вывод создаваемой пользователем линии на экран или нет.
+        /// Значение true - вывод разрешён, в противном случае - false.
+        /// </summary>
+        bool _draw;
+
+        /// <summary>
+        /// Индекс образа для распознавания, рассматриваемый в данный момент.
+        /// </summary>
+        int _currentImage;
+
+        /// <summary>
+        /// Отражает индекс выделенного в данный момент искомого слова.
+        /// </summary>
+        int _selectedIndex = -1;
+
+        /// <summary>
+        /// Конструктор основной формы приложения.
+        /// </summary>
         public FrmExample()
         {
             try
@@ -50,6 +140,9 @@ namespace DynamicParserExample
             }
         }
 
+        /// <summary>
+        /// Отключает или включает доступность кнопок на время выполнения операции.
+        /// </summary>
         bool EnableButtons
         {
             set
@@ -68,17 +161,33 @@ namespace DynamicParserExample
             }
         }
 
+        /// <summary>
+        /// Вызывается, когда пользователь начинает рисовать исходное изображение.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void pbDraw_MouseDown(object sender, MouseEventArgs e)
         {
             _draw = true;
             _grFront.DrawRectangle(_blackPen, new Rectangle(e.X, e.Y, 1, 1));
         }
 
+        /// <summary>
+        /// Получает значение, означающее, существует заданное слово в коллекции или нет.
+        /// В случае, если оно существует, возвращается значение true, в противном случае - false.
+        /// </summary>
+        /// <param name="word">Проверяемое слово.</param>
+        /// <returns>В случае, если указанное слово существует, возвращается значение true, в противном случае - false.</returns>
         bool WordExist(string word)
         {
             return lstWords.Items.Cast<string>().Any(s => string.Compare(s, word, StringComparison.OrdinalIgnoreCase) == 0);
         }
 
+        /// <summary>
+        /// Добавляет указанное искомое слово.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void btnWordAdd_Click(object sender, EventArgs e)
         {
             SafetyExecute(() =>
@@ -94,6 +203,11 @@ namespace DynamicParserExample
             }, WordsLoad);
         }
 
+        /// <summary>
+        /// Удаляет выделенное искомое слово.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void btnWordRemove_Click(object sender, EventArgs e)
         {
             if (!btnWordRemove.Enabled)
@@ -109,11 +223,19 @@ namespace DynamicParserExample
             }, WordsLoad);
         }
 
+        /// <summary>
+        /// Сохраняет искомые слова в файл, имя которого содержится в константе <see cref="StrWordsFile"/> с расширением txt.
+        /// Кодировка: UTF-8.
+        /// </summary>
         void WordsSave()
         {
             SafetyExecute(() => File.WriteAllLines(_strWordsPath, lstWords.Items.Cast<string>(), Encoding.UTF8));
         }
 
+        /// <summary>
+        /// Загружает искомые слова из файла, имя которого содержится в константе <see cref="StrWordsFile"/> с расширением txt.
+        /// Кодировка: UTF-8.
+        /// </summary>
         void WordsLoad()
         {
             SafetyExecute(() =>
@@ -282,7 +404,7 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        /// Запускает или останавливает таймер, выполняющий замер затраченного времени.
+        /// Запускает или останавливает таймер, выполняющий замер времени, затраченного на распознавание.
         /// </summary>
         /// <param name="enable">Значение true включает таймер, false - выключает.</param>
         void WaitableTimer(bool enable)

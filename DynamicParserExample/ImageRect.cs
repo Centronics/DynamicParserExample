@@ -8,21 +8,68 @@ using DynamicProcessor;
 
 namespace DynamicParserExample
 {
+    /// <summary>
+    /// Предназначен для работы с образами искомых букв.
+    /// </summary>
     public class ImageRect
     {
+        /// <summary>
+        /// Расширение изображения образа искомой буквы.
+        /// </summary>
         public const string ExtImg = "bmp";
+
+        /// <summary>
+        /// Путь, по которому осуществляется поиск искомых образов букв.
+        /// </summary>
         public static string SearchPath { get; } = Application.StartupPath;
+
+        /// <summary>
+        /// Получает изображения букв, поиск которых следует осуществить.
+        /// </summary>
         static IEnumerable<string> BitmapFiles => Directory.GetFiles(SearchPath, $"*.{ExtImg}");
 
+        /// <summary>
+        /// Содержит текущее изображение.
+        /// </summary>
         public Bitmap Bitm { get; }
-        public string Tag { get; }
+
+        /// <summary>
+        /// Полный путь к текущему образу.
+        /// </summary>
         public string ImagePath { get; }
+
+        /// <summary>
+        /// Определяет значение поля <see cref="DynamicParser.Processor.Tag"/>.
+        /// </summary>
         public string SymbolString { get; }
+
+        /// <summary>
+        /// Символ текущей буквы в виде строки.
+        /// </summary>
         public string SymbolName { get; }
+
+        /// <summary>
+        /// Символ текущей буквы.
+        /// </summary>
         public char Symbol { get; }
+
+        /// <summary>
+        /// Номер текущего образа.
+        /// </summary>
         public ulong Number { get; }
+
+        /// <summary>
+        /// Получает значение, является ли данный файл образом, предназначенным для распознавания.
+        /// Значение true означает, что данный файл является образом для распознавания, false - нет.
+        /// </summary>
         public bool IsSymbol { get; }
 
+        /// <summary>
+        /// Инициализирует экземпляр образа буквы для распознавания.
+        /// </summary>
+        /// <param name="btm">Изображение буквы.</param>
+        /// <param name="tag">Название буквы.</param>
+        /// <param name="imagePath">Полный путь к изображению буквы.</param>
         public ImageRect(Bitmap btm, string tag, string imagePath)
         {
             if (btm == null)
@@ -37,11 +84,16 @@ namespace DynamicParserExample
             SymbolName = new string(Symbol, 1);
             Number = number.Value;
             Bitm = btm;
-            Tag = tag;
             ImagePath = imagePath;
             IsSymbol = true;
         }
 
+        /// <summary>
+        /// Сохраняет указанный образ буквы с указанным названием.
+        /// </summary>
+        /// <param name="name">Название буквы.</param>
+        /// <param name="btm">Изображение буквы.</param>
+        /// <returns>Возвращает экмемпляр текущего класса образа буквы.</returns>
         public static ImageRect Save(char name, Bitmap btm)
         {
             if (btm == null)
@@ -55,6 +107,9 @@ namespace DynamicParserExample
             return ir;
         }
 
+        /// <summary>
+        /// Получает текущее изображение в виде набора знаков объектов карты.
+        /// </summary>
         public SignValue[,] ImageMap
         {
             get
@@ -69,6 +124,9 @@ namespace DynamicParserExample
             }
         }
 
+        /// <summary>
+        /// Получает все имеющиеся на данный момент образы букв для распознавания.
+        /// </summary>
         public static IEnumerable<ImageRect> Images
         {
             get
@@ -83,6 +141,12 @@ namespace DynamicParserExample
             }
         }
 
+        /// <summary>
+        /// Выполняет разбор имени файла с образом буквы, выделяя номер буквы.
+        /// </summary>
+        /// <param name="number">Возвращает номер текущей буквы.</param>
+        /// <param name="tag">Имя файла без расширения.</param>
+        /// <returns>Возвращает значение true в случае, если разбор имени файла прошёл успешно, в противном случае - false.</returns>
         static bool NameParser(out ulong? number, string tag)
         {
             number = null;
@@ -97,6 +161,11 @@ namespace DynamicParserExample
             return true;
         }
 
+        /// <summary>
+        /// Генерирует имя нового образа, увеличивая его номер.
+        /// </summary>
+        /// <param name="name">Имя образа, на основании которого требуется сгенерировать новое имя.</param>
+        /// <returns>Возвращает строку полного пути к файлу нового образа.</returns>
         static string NewFileName(char name)
         {
             ImageRect imageRect = null;

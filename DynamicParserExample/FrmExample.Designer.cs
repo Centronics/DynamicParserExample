@@ -171,7 +171,7 @@
             this.grpImages.Size = new System.Drawing.Size(267, 90);
             this.grpImages.TabIndex = 12;
             this.grpImages.TabStop = false;
-            this.grpImages.Text = "Искомые образы букв";
+            this.grpImages.Text = "Образы искомых букв";
             // 
             // txtImagesCount
             // 
