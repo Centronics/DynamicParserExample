@@ -142,17 +142,30 @@ namespace DynamicParserExample
             });
         }
 
+        /// <summary>
+        /// Вызывается при отпускании клавиши мыши над полем создания исходного изображения.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void pbDraw_MouseUp(object sender, MouseEventArgs e)
         {
             _draw = false;
         }
 
+        /// <summary>
+        /// Возвращает окно просмотра образов в исходное состояние.
+        /// </summary>
         void SymbolBrowseClear()
         {
             lblSymbolName.Text = _unknownSymbolName;
             pbBrowse.Image = new Bitmap(pbBrowse.Width, pbBrowse.Height);
         }
 
+        /// <summary>
+        /// Вызывается по нажатию кнопки "Следующий" в искомых образах букв.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void btnNext_Click(object sender, EventArgs e)
         {
             SafetyExecute(() =>
@@ -175,6 +188,11 @@ namespace DynamicParserExample
             });
         }
 
+        /// <summary>
+        /// Вызывается по нажатию кнопки "Предыдущий" в искомых образах букв.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void btnPrev_Click(object sender, EventArgs e)
         {
             SafetyExecute(() =>
@@ -197,6 +215,12 @@ namespace DynamicParserExample
             });
         }
 
+        /// <summary>
+        /// Вызывается по нажатию кнопки "Удалить".
+        /// Удаляет выбранное изображение.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void btnImageDelete_Click(object sender, EventArgs e)
         {
             SafetyExecute(() =>
@@ -213,6 +237,11 @@ namespace DynamicParserExample
             }, RefreshImagesCount);
         }
 
+        /// <summary>
+        /// Вызывается по нажатию кнопки "Создать образ".
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void btnImageSave_Click(object sender, EventArgs e)
         {
             SafetyExecute(() =>
@@ -226,6 +255,10 @@ namespace DynamicParserExample
             }, RefreshImagesCount);
         }
 
+        /// <summary>
+        /// Выполняет подсчёт количества изображений для поиска.
+        /// Обновляет состояния кнопок, связанных с изображениями.
+        /// </summary>
         void RefreshImagesCount()
         {
             InvokeFunction(() =>
@@ -248,6 +281,10 @@ namespace DynamicParserExample
             });
         }
 
+        /// <summary>
+        /// Запускает или останавливает таймер, выполняющий замер затраченного времени.
+        /// </summary>
+        /// <param name="enable">Значение true включает таймер, false - выключает.</param>
         void WaitableTimer(bool enable)
         {
             if (!enable && _waitThread?.IsAlive == true)
@@ -327,6 +364,10 @@ namespace DynamicParserExample
             }).Start();
         }
 
+        /// <summary>
+        /// Возвращает значение true в случае, если пользователь нарисовал что-либо в окне создания исходного изображения.
+        /// В противном случае возвращает значение false.
+        /// </summary>
         bool IsPainting
         {
             get
@@ -340,6 +381,12 @@ namespace DynamicParserExample
             }
         }
 
+        /// <summary>
+        /// Вызывается по нажатию кнопки "Распознать".
+        /// Распознаёт изображение и выводит результат на форму.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void btnRecognize_Click(object sender, EventArgs e)
         {
             SafetyExecute(() =>
@@ -396,6 +443,11 @@ namespace DynamicParserExample
             });
         }
 
+        /// <summary>
+        /// Осуществляет выход из программы по нажатию клавиши Escape.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void FrmExample_KeyUp(object sender, KeyEventArgs e)
         {
             // ReSharper disable once SwitchStatementMissingSomeCases
@@ -407,34 +459,65 @@ namespace DynamicParserExample
             }
         }
 
+        /// <summary>
+        /// Осуществляет ввод искомого слова по нажатии клавиши Enter.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void txtWord_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
                 btnWordAdd_Click(null, null);
         }
 
+        /// <summary>
+        /// Претотвращает сигналы недопустимого ввода в текстовое поле ввода искомого слова.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void txtWord_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if ((Keys)e.KeyChar == Keys.Enter || (Keys)e.KeyChar == Keys.Tab || (Keys)e.KeyChar == Keys.Pause || (Keys)e.KeyChar == Keys.XButton1 || e.KeyChar == 15)
+            if ((Keys)e.KeyChar == Keys.Enter || (Keys)e.KeyChar == Keys.Tab || (Keys)e.KeyChar == Keys.Pause ||
+                (Keys)e.KeyChar == Keys.XButton1 || e.KeyChar == 15)
                 e.Handled = true;
         }
 
+        /// <summary>
+        /// Производит удаление слова по нажатию клавиши Delete.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void lstWords_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
                 btnWordRemove_Click(null, null);
         }
 
+        /// <summary>
+        /// Отменяет отрисовку изображения для распознавания в случае ухода указателя мыши с поля рисования.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void pbDraw_MouseLeave(object sender, EventArgs e)
         {
             _draw = false;
         }
 
+        /// <summary>
+        /// Обновляет количество изображений для поиска.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void tmrImagesCount_Tick(object sender, EventArgs e)
         {
             RefreshImagesCount();
         }
 
+        /// <summary>
+        /// Отвечает за отрисовку рисунка, создаваемого пользователем.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void pbDraw_MouseMove(object sender, MouseEventArgs e)
         {
             SafetyExecute(() =>
@@ -444,6 +527,12 @@ namespace DynamicParserExample
             }, () => pbDraw.Refresh());
         }
 
+        /// <summary>
+        /// Вызывается во время первого отображения формы.
+        /// Производит инициализацию.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void FrmExample_Shown(object sender, EventArgs e)
         {
             pbDraw.Image = _btmFront;
@@ -453,68 +542,79 @@ namespace DynamicParserExample
             WordsLoad();
         }
 
+        /// <summary>
+        /// Очищает поле рисования исходного изображения.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void btnClear_Click(object sender, EventArgs e)
         {
             SafetyExecute(() => _grFront.Clear(Color.White), () => pbDraw.Refresh());
         }
 
-        void InvokeFunction(Action funcAction, Action catchAction = null, bool invokeErrorMessage = true)
+        /// <summary>
+        /// Выполняет функцию с помощью метода Invoke.
+        /// </summary>
+        /// <param name="funcAction">Функция, которую необходимо выполнить.</param>
+        /// <param name="catchAction">Функция, которая должна быть выполнена в блоке catch.</param>
+        void InvokeFunction(Action funcAction, Action catchAction = null)
         {
             if (funcAction == null)
                 return;
             try
             {
-                Invoke((Action)delegate
-               {
-                   try
-                   {
-                       funcAction();
-                   }
-                   catch (ThreadAbortException) { }
-                   catch (Exception ex)
-                   {
-                       try
-                       {
-                           if (invokeErrorMessage)
-                               MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                           catchAction?.Invoke();
-                       }
-                       catch (ThreadAbortException) { }
-                       catch (Exception ex1)
-                       {
-                           if (invokeErrorMessage)
-                               MessageBox.Show(this, ex1.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                       }
-                   }
-               });
+                Action act = delegate
+                {
+                    try
+                    {
+                        funcAction();
+                    }
+                    catch (Exception ex)
+                    {
+                        try
+                        {
+                            MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                            catchAction?.Invoke();
+                        }
+                        catch (Exception ex1)
+                        {
+                            MessageBox.Show(this, ex1.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
+                    }
+                };
+                if (InvokeRequired)
+                    Invoke(act);
+                else
+                    act();
             }
             catch (Exception ex)
             {
-                if (invokeErrorMessage)
-                    MessageBox.Show(ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        void SafetyExecute(Action funcAction, Action finallyAction = null, Action catchAction = null, bool invokeErrorMessage = true)
+        /// <summary>
+        /// Представляет обёртку для выполнения функций с применением блоков try-catch, а также выдачей сообщений обо всех ошибках.
+        /// </summary>
+        /// <param name="funcAction">Функция, которая должна быть выполнена.</param>
+        /// <param name="finallyAction">Функция, которая должна быть выполнена в блоке finally.</param>
+        /// <param name="catchAction">Функция, которая должна быть выполнена в блоке catch.</param>
+        void SafetyExecute(Action funcAction, Action finallyAction = null, Action catchAction = null)
         {
             try
             {
                 funcAction?.Invoke();
             }
-            catch (ThreadAbortException) { }
             catch (Exception ex)
             {
                 try
                 {
-                    if (invokeErrorMessage)
-                        InvokeFunction(() => MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
+                    InvokeFunction(() => MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
                     catchAction?.Invoke();
                 }
-                catch (ThreadAbortException) { }
                 catch
                 {
-                    if (invokeErrorMessage)
-                        InvokeFunction(() => MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
+                    InvokeFunction(() => MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
                 }
             }
             finally
@@ -523,15 +623,17 @@ namespace DynamicParserExample
                 {
                     finallyAction?.Invoke();
                 }
-                catch (ThreadAbortException) { }
                 catch (Exception ex)
                 {
-                    if (invokeErrorMessage)
-                        InvokeFunction(() => MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
+                    InvokeFunction(() => MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
                 }
             }
         }
 
+        /// <summary>
+        /// Отображает сообщение с указанным текстом в другом потоке.
+        /// </summary>
+        /// <param name="message">Текст отображаемого сообщения.</param>
         void MessageInOtherThread(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
