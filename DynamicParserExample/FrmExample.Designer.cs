@@ -38,7 +38,7 @@
             this.btnWordRemove = new System.Windows.Forms.Button();
             this.txtWord = new System.Windows.Forms.TextBox();
             this.btnImageSave = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.grpImages = new System.Windows.Forms.GroupBox();
             this.txtImagesCount = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.lblSymbolName = new System.Windows.Forms.Label();
@@ -47,20 +47,20 @@
             this.btnPrev = new System.Windows.Forms.Button();
             this.btnNext = new System.Windows.Forms.Button();
             this.pbBrowse = new System.Windows.Forms.PictureBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.grpResults = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.lblElapsedTime = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.grpSourceImage = new System.Windows.Forms.GroupBox();
+            this.grpWords = new System.Windows.Forms.GroupBox();
             this.tmrImagesCount = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pbDraw)).BeginInit();
-            this.groupBox1.SuspendLayout();
+            this.grpImages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbBrowse)).BeginInit();
-            this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            this.groupBox4.SuspendLayout();
+            this.grpResults.SuspendLayout();
+            this.grpSourceImage.SuspendLayout();
+            this.grpWords.SuspendLayout();
             this.SuspendLayout();
             // 
             // pbDraw
@@ -155,23 +155,23 @@
             this.btnImageSave.UseVisualStyleBackColor = true;
             this.btnImageSave.Click += new System.EventHandler(this.btnImageSave_Click);
             // 
-            // groupBox1
+            // grpImages
             // 
-            this.groupBox1.Controls.Add(this.txtImagesCount);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.lblSymbolName);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.btnImageDelete);
-            this.groupBox1.Controls.Add(this.btnPrev);
-            this.groupBox1.Controls.Add(this.btnImageSave);
-            this.groupBox1.Controls.Add(this.btnNext);
-            this.groupBox1.Controls.Add(this.pbBrowse);
-            this.groupBox1.Location = new System.Drawing.Point(8, 126);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(267, 90);
-            this.groupBox1.TabIndex = 12;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Искомые образы букв";
+            this.grpImages.Controls.Add(this.txtImagesCount);
+            this.grpImages.Controls.Add(this.label4);
+            this.grpImages.Controls.Add(this.lblSymbolName);
+            this.grpImages.Controls.Add(this.label1);
+            this.grpImages.Controls.Add(this.btnImageDelete);
+            this.grpImages.Controls.Add(this.btnPrev);
+            this.grpImages.Controls.Add(this.btnImageSave);
+            this.grpImages.Controls.Add(this.btnNext);
+            this.grpImages.Controls.Add(this.pbBrowse);
+            this.grpImages.Location = new System.Drawing.Point(8, 126);
+            this.grpImages.Name = "grpImages";
+            this.grpImages.Size = new System.Drawing.Size(267, 90);
+            this.grpImages.TabIndex = 12;
+            this.grpImages.TabStop = false;
+            this.grpImages.Text = "Искомые образы букв";
             // 
             // txtImagesCount
             // 
@@ -247,16 +247,16 @@
             this.pbBrowse.TabIndex = 0;
             this.pbBrowse.TabStop = false;
             // 
-            // groupBox2
+            // grpResults
             // 
-            this.groupBox2.Controls.Add(this.label5);
-            this.groupBox2.Controls.Add(this.lstResults);
-            this.groupBox2.Location = new System.Drawing.Point(281, 126);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(265, 90);
-            this.groupBox2.TabIndex = 6;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Результаты";
+            this.grpResults.Controls.Add(this.label5);
+            this.grpResults.Controls.Add(this.lstResults);
+            this.grpResults.Location = new System.Drawing.Point(281, 126);
+            this.grpResults.Name = "grpResults";
+            this.grpResults.Size = new System.Drawing.Size(265, 90);
+            this.grpResults.TabIndex = 6;
+            this.grpResults.TabStop = false;
+            this.grpResults.Text = "Результаты";
             // 
             // label5
             // 
@@ -294,33 +294,33 @@
             this.label3.TabIndex = 16;
             this.label3.Text = "Новое слово (<= 6 букв):";
             // 
-            // groupBox3
+            // grpSourceImage
             // 
-            this.groupBox3.Controls.Add(this.pbDraw);
-            this.groupBox3.Controls.Add(this.label2);
-            this.groupBox3.Controls.Add(this.lblElapsedTime);
-            this.groupBox3.Controls.Add(this.btnRecognize);
-            this.groupBox3.Controls.Add(this.btnClear);
-            this.groupBox3.Location = new System.Drawing.Point(8, 7);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(267, 116);
-            this.groupBox3.TabIndex = 17;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Создание исходного изображения";
+            this.grpSourceImage.Controls.Add(this.pbDraw);
+            this.grpSourceImage.Controls.Add(this.label2);
+            this.grpSourceImage.Controls.Add(this.lblElapsedTime);
+            this.grpSourceImage.Controls.Add(this.btnRecognize);
+            this.grpSourceImage.Controls.Add(this.btnClear);
+            this.grpSourceImage.Location = new System.Drawing.Point(8, 7);
+            this.grpSourceImage.Name = "grpSourceImage";
+            this.grpSourceImage.Size = new System.Drawing.Size(267, 116);
+            this.grpSourceImage.TabIndex = 17;
+            this.grpSourceImage.TabStop = false;
+            this.grpSourceImage.Text = "Создание исходного изображения";
             // 
-            // groupBox4
+            // grpWords
             // 
-            this.groupBox4.Controls.Add(this.label3);
-            this.groupBox4.Controls.Add(this.lstWords);
-            this.groupBox4.Controls.Add(this.txtWord);
-            this.groupBox4.Controls.Add(this.btnWordRemove);
-            this.groupBox4.Controls.Add(this.btnWordAdd);
-            this.groupBox4.Location = new System.Drawing.Point(281, 7);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(265, 116);
-            this.groupBox4.TabIndex = 18;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Искомые слова";
+            this.grpWords.Controls.Add(this.label3);
+            this.grpWords.Controls.Add(this.lstWords);
+            this.grpWords.Controls.Add(this.txtWord);
+            this.grpWords.Controls.Add(this.btnWordRemove);
+            this.grpWords.Controls.Add(this.btnWordAdd);
+            this.grpWords.Location = new System.Drawing.Point(281, 7);
+            this.grpWords.Name = "grpWords";
+            this.grpWords.Size = new System.Drawing.Size(265, 116);
+            this.grpWords.TabIndex = 18;
+            this.grpWords.TabStop = false;
+            this.grpWords.Text = "Искомые слова";
             // 
             // tmrImagesCount
             // 
@@ -333,10 +333,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(554, 221);
-            this.Controls.Add(this.groupBox4);
-            this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.grpWords);
+            this.Controls.Add(this.grpSourceImage);
+            this.Controls.Add(this.grpResults);
+            this.Controls.Add(this.grpImages);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.KeyPreview = true;
             this.MaximizeBox = false;
@@ -347,15 +347,15 @@
             this.Shown += new System.EventHandler(this.FrmExample_Shown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FrmExample_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.pbDraw)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.grpImages.ResumeLayout(false);
+            this.grpImages.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbBrowse)).EndInit();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
+            this.grpResults.ResumeLayout(false);
+            this.grpResults.PerformLayout();
+            this.grpSourceImage.ResumeLayout(false);
+            this.grpSourceImage.PerformLayout();
+            this.grpWords.ResumeLayout(false);
+            this.grpWords.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -371,8 +371,8 @@
         private System.Windows.Forms.Button btnWordRemove;
         private System.Windows.Forms.TextBox txtWord;
         private System.Windows.Forms.Button btnImageSave;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox grpImages;
+        private System.Windows.Forms.GroupBox grpResults;
         private System.Windows.Forms.PictureBox pbBrowse;
         private System.Windows.Forms.Button btnPrev;
         private System.Windows.Forms.Button btnNext;
@@ -382,8 +382,8 @@
         private System.Windows.Forms.Label lblElapsedTime;
         private System.Windows.Forms.Button btnImageDelete;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.GroupBox grpSourceImage;
+        private System.Windows.Forms.GroupBox grpWords;
         private System.Windows.Forms.TextBox txtImagesCount;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;

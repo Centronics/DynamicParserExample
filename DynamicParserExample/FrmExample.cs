@@ -21,7 +21,8 @@ namespace DynamicParserExample
             StrWordsFile = "Words",
             ImagesNoExists = @"Образы отсутствуют. Для их добавления и распознавания необходимо создать искомые образы, нажав кнопку 'Создать образ', затем добавить искомое слово, которое так или иначе можно составить из названий искомых образов. Затем необходимо нарисовать его в поле исходного изображения. Далее нажать кнопку 'Распознать'.";
 
-        readonly string _strRecog, _strWordsPath = Path.Combine(Application.StartupPath, $"{StrWordsFile}.txt"), _unknownSymbolName;
+        readonly string _strRecog, _strWordsPath = Path.Combine(Application.StartupPath, $"{StrWordsFile}.txt"), _unknownSymbolName,
+            _strGrpResults, _strGrpWords;
         readonly Graphics _grFront;
         readonly Bitmap _btmFront;
         readonly Pen _blackPen = new Pen(Color.Black, 2.0f);
@@ -39,6 +40,8 @@ namespace DynamicParserExample
                 _grFront = Graphics.FromImage(_btmFront);
                 _strRecog = btnRecognize.Text;
                 _unknownSymbolName = lblSymbolName.Text;
+                _strGrpResults = grpResults.Text;
+                _strGrpWords = grpWords.Text;
             }
             catch (Exception ex)
             {
@@ -88,7 +91,7 @@ namespace DynamicParserExample
                 lstWords.Items.Insert(0, txtWord.Text);
                 WordsSave();
                 txtWord.Text = string.Empty;
-            }, WordsLoad, null, true);
+            }, WordsLoad);
         }
 
         void btnWordRemove_Click(object sender, EventArgs e)
@@ -103,12 +106,12 @@ namespace DynamicParserExample
                 _selectedIndex = index;
                 lstWords.Items.RemoveAt(index);
                 WordsSave();
-            }, WordsLoad, null, true);
+            }, WordsLoad);
         }
 
         void WordsSave()
         {
-            SafetyExecute(() => File.WriteAllLines(_strWordsPath, lstWords.Items.Cast<string>(), Encoding.UTF8), null, null, true);
+            SafetyExecute(() => File.WriteAllLines(_strWordsPath, lstWords.Items.Cast<string>(), Encoding.UTF8));
         }
 
         void WordsLoad()
@@ -133,9 +136,10 @@ namespace DynamicParserExample
             {
                 _selectedIndex = -1;
                 btnWordRemove.Enabled = lstWords.Items.Count > 0;
+                grpWords.Text = $@"{_strGrpWords} ({lstWords.Items.Count})";
                 if (lstWords.Items.Count <= 0)
                     File.Delete(_strWordsPath);
-            }, null, true);
+            });
         }
 
         void pbDraw_MouseUp(object sender, MouseEventArgs e)
@@ -168,7 +172,7 @@ namespace DynamicParserExample
                 ImageRect ir = lst[_currentImage];
                 pbBrowse.Image = ir.Bitm;
                 lblSymbolName.Text = ir.SymbolName;
-            }, null, null, true);
+            });
         }
 
         void btnPrev_Click(object sender, EventArgs e)
@@ -190,7 +194,7 @@ namespace DynamicParserExample
                 ImageRect ir = lst[_currentImage];
                 pbBrowse.Image = ir.Bitm;
                 lblSymbolName.Text = ir.SymbolName;
-            }, null, null, true);
+            });
         }
 
         void btnImageDelete_Click(object sender, EventArgs e)
@@ -206,7 +210,7 @@ namespace DynamicParserExample
                 if (_currentImage >= lst.Count || _currentImage < 0) return;
                 File.Delete(lst[_currentImage].ImagePath);
                 btnPrev_Click(null, null);
-            }, RefreshImagesCount, null, true);
+            }, RefreshImagesCount);
         }
 
         void btnImageSave_Click(object sender, EventArgs e)
@@ -219,7 +223,7 @@ namespace DynamicParserExample
                     pbBrowse.Image = fs.LastImage.Bitm;
                     lblSymbolName.Text = fs.LastImage.SymbolName;
                 }
-            }, RefreshImagesCount, null, true);
+            }, RefreshImagesCount);
         }
 
         void RefreshImagesCount()
@@ -241,7 +245,7 @@ namespace DynamicParserExample
                 btnImageDelete.Enabled = true;
                 btnNext.Enabled = true;
                 btnPrev.Enabled = true;
-            }, null, true);
+            });
         }
 
         void WaitableTimer(bool enable)
@@ -315,7 +319,7 @@ namespace DynamicParserExample
                     {
                         _stopwatch.Stop();
                     }
-                }, () => InvokeFunction(() => btnRecognize.Text = _strRecog, null, true), null, true);
+                }, () => InvokeFunction(() => btnRecognize.Text = _strRecog));
             })
             {
                 IsBackground = true,
@@ -377,17 +381,19 @@ namespace DynamicParserExample
                         }
                         InvokeFunction(() =>
                         {
+                            int count = results?.Count ?? 0;
+                            grpResults.Text = $@"{_strGrpResults} ({count})";
                             if (results == null) return;
                             foreach (string s in results)
                                 lstResults.Items.Add(s);
-                        }, null, true);
-                    }, () => WaitableTimer(false), null, true);
+                        });
+                    }, () => WaitableTimer(false));
                 })
                 {
                     IsBackground = true,
                     Name = "Recognizer"
                 }).Start();
-            }, null, null, true);
+            });
         }
 
         void FrmExample_KeyUp(object sender, KeyEventArgs e)
@@ -435,7 +441,7 @@ namespace DynamicParserExample
             {
                 if (_draw)
                     _grFront.DrawRectangle(_blackPen, new Rectangle(e.X, e.Y, 1, 1));
-            }, () => pbDraw.Refresh(), null, true);
+            }, () => pbDraw.Refresh());
         }
 
         void FrmExample_Shown(object sender, EventArgs e)
@@ -449,10 +455,10 @@ namespace DynamicParserExample
 
         void btnClear_Click(object sender, EventArgs e)
         {
-            SafetyExecute(() => _grFront.Clear(Color.White), () => pbDraw.Refresh(), null, true);
+            SafetyExecute(() => _grFront.Clear(Color.White), () => pbDraw.Refresh());
         }
 
-        void InvokeFunction(Action funcAction, Action catchAction = null, bool invokeErrorMessage = false)
+        void InvokeFunction(Action funcAction, Action catchAction = null, bool invokeErrorMessage = true)
         {
             if (funcAction == null)
                 return;
@@ -482,13 +488,14 @@ namespace DynamicParserExample
                    }
                });
             }
-            catch
+            catch (Exception ex)
             {
-                //ignored
+                if (invokeErrorMessage)
+                    MessageBox.Show(ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        void SafetyExecute(Action funcAction, Action finallyAction = null, Action catchAction = null, bool invokeErrorMessage = false)
+        void SafetyExecute(Action funcAction, Action finallyAction = null, Action catchAction = null, bool invokeErrorMessage = true)
         {
             try
             {
@@ -539,7 +546,7 @@ namespace DynamicParserExample
                     IsBackground = true,
                     Name = @"Message"
                 }.Start();
-            }, null, null, true);
+            });
         }
     }
 }

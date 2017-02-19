@@ -141,9 +141,9 @@ namespace DynamicParserExample
                 {
                     MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
-                catch
+                catch (Exception ex1)
                 {
-                    //ignored
+                    MessageBox.Show($@"{ex.Message}{Environment.NewLine}{ex1.Message}", @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
