@@ -4,14 +4,46 @@ using System.Windows.Forms;
 
 namespace DynamicParserExample
 {
+    /// <summary>
+    /// Форма ввода нового искомого символа.
+    /// </summary>
     public partial class FrmSymbol : Form
     {
+        /// <summary>
+        /// Задаёт толщину и цвет выводимой линии.
+        /// </summary>
         readonly Pen _blackPen = new Pen(Color.Black, 2.0f);
-        readonly Graphics _grFront;
-        readonly Bitmap _btmFront;
-        public ImageRect LastImage { get; private set; }
-        bool _draw, _timedOut;
 
+        /// <summary>
+        /// Поверхность для рисования образа.
+        /// </summary>
+        readonly Graphics _grFront;
+
+        /// <summary>
+        /// Изображение создаваемого образа.
+        /// </summary>
+        readonly Bitmap _btmFront;
+
+        /// <summary>
+        /// Текущий образ, который был сохранён.
+        /// Если образ не сохранён, то содержит null, в противном случае содержит образ искомой буквы.
+        /// </summary>
+        public ImageRect LastImage { get; private set; }
+
+        /// <summary>
+        /// Определяет, разрешён вывод создаваемой пользователем линии на экран или нет.
+        /// Значение true - вывод разрешён, в противном случае - false.
+        /// </summary>
+        bool _draw;
+
+        /// <summary>
+        /// Необходимо для обозначения временного интервала, необходимого для задержки реакции на нажатую клавишу.
+        /// </summary>
+        bool _timedOut;
+
+        /// <summary>
+        /// Конструктор формы ввода нового искомого символа.
+        /// </summary>
         public FrmSymbol()
         {
             InitializeComponent();
@@ -20,16 +52,31 @@ namespace DynamicParserExample
             pbBox.Image = _btmFront;
         }
 
+        /// <summary>
+        /// Запрещает вывод создаваемой пользователем линии на экран.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void pbBox_MouseUp(object sender, MouseEventArgs e)
         {
             _draw = false;
         }
 
+        /// <summary>
+        /// Запрещает вывод создаваемой пользователем линии на экран.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void pbBox_MouseLeave(object sender, EventArgs e)
         {
             _draw = false;
         }
 
+        /// <summary>
+        /// Разрешает вывод создаваемой пользователем линии на экран.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void pbBox_MouseDown(object sender, MouseEventArgs e)
         {
             RunFunction(() =>
@@ -37,9 +84,14 @@ namespace DynamicParserExample
                 _draw = true;
                 _grFront.DrawRectangle(_blackPen, new Rectangle(e.X, e.Y, 1, 1));
             });
-            RunFunction(() => RunFunction(() => pbBox.Refresh()));
+            RunFunction(() => pbBox.Refresh());
         }
 
+        /// <summary>
+        /// Выводит создаваемую пользователем линию на экран, если вывод разрешён.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void pbBox_MouseMove(object sender, MouseEventArgs e)
         {
             RunFunction(() =>
@@ -47,9 +99,14 @@ namespace DynamicParserExample
                 if (_draw)
                     _grFront.DrawRectangle(_blackPen, new Rectangle(e.X, e.Y, 1, 1));
             });
-            RunFunction(() => RunFunction(() => pbBox.Refresh()));
+            RunFunction(() => pbBox.Refresh());
         }
 
+        /// <summary>
+        /// Сохраняет текущий образ искомой буквы.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void btnOK_Click(object sender, EventArgs e)
         {
             RunFunction(() =>
@@ -66,12 +123,22 @@ namespace DynamicParserExample
             });
         }
 
+        /// <summary>
+        /// Очищает поверхность для рисования искомого образа.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void btnClear_Click(object sender, EventArgs e)
         {
             RunFunction(() => _grFront.Clear(Color.White));
             RunFunction(() => pbBox.Refresh());
         }
 
+        /// <summary>
+        /// Подготавливает поверхность для рисования искомого образа.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void FrmSymbol_Shown(object sender, EventArgs e)
         {
             RunFunction(() =>
@@ -81,6 +148,11 @@ namespace DynamicParserExample
             });
         }
 
+        /// <summary>
+        /// Обрабатывает нажатия клавиш пользователем.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void FrmSymbol_KeyUp(object sender, KeyEventArgs e)
         {
             RunFunction(() =>
@@ -100,6 +172,11 @@ namespace DynamicParserExample
             });
         }
 
+        /// <summary>
+        /// Предотвращает реакцию системы на некорректный ввод.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void txtSymbol_KeyPress(object sender, KeyPressEventArgs e)
         {
             RunFunction(() =>
@@ -111,6 +188,11 @@ namespace DynamicParserExample
             });
         }
 
+        /// <summary>
+        /// Предотвращает реакцию системы на некорректный ввод.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void FrmSymbol_KeyPress(object sender, KeyPressEventArgs e)
         {
             RunFunction(() =>
@@ -121,12 +203,21 @@ namespace DynamicParserExample
             });
         }
 
+        /// <summary>
+        /// Происходит, когда отсчитываемое время реакции на нажатую клавишу подошло к концу.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
         void tmrPressWait_Tick(object sender, EventArgs e)
         {
             _timedOut = true;
             tmrPressWait.Enabled = false;
         }
 
+        /// <summary>
+        /// Выполняет функцию с выводом сообщения об ошибке на экран.
+        /// </summary>
+        /// <param name="act">Выполняемая функция.</param>
         void RunFunction(Action act)
         {
             if (act == null)
@@ -137,14 +228,7 @@ namespace DynamicParserExample
             }
             catch (Exception ex)
             {
-                try
-                {
-                    MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
-                catch (Exception ex1)
-                {
-                    MessageBox.Show($@"{ex.Message}{Environment.NewLine}{ex1.Message}", @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                MessageBox.Show(this, ex.Message, @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
     }
