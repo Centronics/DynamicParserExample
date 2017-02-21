@@ -88,11 +88,6 @@ namespace DynamicParserExample
         readonly Pen _blackPen = new Pen(Color.Black, 2.0f);
 
         /// <summary>
-        /// Поток, работающий в режиме ожидания окончания процедуры распознавания.
-        /// </summary>
-        Thread _waitThread;
-
-        /// <summary>
         /// Поток, отвечающий за выполнение процедуры распознавания.
         /// </summary>
         Thread _workThread;
@@ -406,21 +401,9 @@ namespace DynamicParserExample
         /// <summary>
         /// Запускает или останавливает таймер, выполняющий замер времени, затраченного на распознавание.
         /// </summary>
-        /// <param name="enable">Значение true включает таймер, false - выключает.</param>
-        void WaitableTimer(bool enable)
+        void WaitableTimer()
         {
-            if (!enable && _waitThread?.IsAlive == true)
-            {
-                SafetyExecute(() => _waitThread?.Abort(), () =>
-                {
-                    _waitThread = null;
-                    EnableButtons = true;
-                });
-                return;
-            }
-            if (!enable)
-                return;
-            (_waitThread = new Thread((ThreadStart)delegate
+            new Thread((ThreadStart)delegate
             {
                 SafetyExecute(() =>
                 {
@@ -428,7 +411,9 @@ namespace DynamicParserExample
                     try
                     {
                         #region Switcher
+
                         for (int k = 0; k < 4; k++)
+                        {
                             switch (k)
                             {
                                 case 0:
@@ -472,18 +457,23 @@ namespace DynamicParserExample
                                     k = -1;
                                     break;
                             }
+                            if (_workThread?.IsAlive != true)
+                                return;
+                        }
+
                         #endregion
                     }
                     finally
                     {
                         _stopwatch.Stop();
+                        EnableButtons = true;
                     }
                 }, () => InvokeFunction(() => btnRecognize.Text = _strRecog));
             })
             {
                 IsBackground = true,
                 Name = nameof(WaitableTimer)
-            }).Start();
+            }.Start();
         }
 
         /// <summary>
@@ -514,16 +504,13 @@ namespace DynamicParserExample
             SafetyExecute(() =>
             {
                 if (_workThread?.IsAlive == true)
-                {
-                    SafetyExecute(() => _workThread.Abort(), () => _workThread = null);
                     return;
-                }
                 EnableButtons = false;
                 (_workThread = new Thread((ThreadStart)delegate
                 {
                     SafetyExecute(() =>
                     {
-                        WaitableTimer(true);
+                        WaitableTimer();
                         List<ImageRect> images = new List<ImageRect>(ImageRect.Images);
                         if (images.Count <= 0)
                         {
@@ -556,7 +543,7 @@ namespace DynamicParserExample
                             foreach (string s in results)
                                 lstResults.Items.Add(s);
                         });
-                    }, () => WaitableTimer(false));
+                    });
                 })
                 {
                     IsBackground = true,
@@ -675,7 +662,7 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        /// Выполняет функцию с помощью метода Invoke.
+        /// Выполняет метод с помощью метода Invoke.
         /// </summary>
         /// <param name="funcAction">Функция, которую необходимо выполнить.</param>
         /// <param name="catchAction">Функция, которая должна быть выполнена в блоке catch.</param>
