@@ -99,7 +99,7 @@ namespace DynamicParserExample
             if (btm == null)
                 throw new ArgumentNullException(nameof(btm), $@"{nameof(Save)}: Сохраняемое изображение не указано.");
             string path = NewFileName(name);
-            using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.ReadWrite))
+            using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
                 btm.Save(fs, ImageFormat.Bmp);
             ImageRect ir = new ImageRect(btm, Path.GetFileNameWithoutExtension(path), path);
             if (!ir.IsSymbol)

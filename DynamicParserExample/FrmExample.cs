@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -75,12 +76,12 @@ namespace DynamicParserExample
         /// <summary>
         /// Объект для рисования в окне создания распознаваемого изображения.
         /// </summary>
-        readonly Graphics _grFront;
+        Graphics _grFront;
 
         /// <summary>
         /// Изображение, которое выводится в окне создания распознаваемого изображения.
         /// </summary>
-        readonly Bitmap _btmFront;
+        Bitmap _btmFront;
 
         /// <summary>
         /// Задаёт цвет и ширину для рисования в окне создания распознаваемого изображения.
@@ -121,8 +122,7 @@ namespace DynamicParserExample
             try
             {
                 InitializeComponent();
-                _btmFront = new Bitmap(pbDraw.Width, pbDraw.Height);
-                _grFront = Graphics.FromImage(_btmFront);
+                Initialize();
                 _strRecog = btnRecognize.Text;
                 _unknownSymbolName = lblSymbolName.Text;
                 _strGrpResults = grpResults.Text;
@@ -133,6 +133,38 @@ namespace DynamicParserExample
                 MessageBox.Show($@"{ex.Message}{Environment.NewLine}Программа будет завершена.", @"Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Process.GetCurrentProcess().Kill();
             }
+        }
+
+        /// <summary>
+        /// Предназначена для инициализации структур, отвечающих за вывод создаваемого изображения на экран.
+        /// </summary>
+        /// <param name="btmPath">Путь к файлу исходного изображения.</param>
+        void Initialize(string btmPath = null)
+        {
+            if (string.IsNullOrEmpty(btmPath))
+                _btmFront = new Bitmap(pbDraw.Width, pbDraw.Height);
+            else
+            {
+                Bitmap btm;
+                using (FileStream fs = new FileStream(btmPath, FileMode.Open, FileAccess.Read))
+                    btm = new Bitmap(fs);
+                if (btm.Width != pbDraw.Width)
+                {
+                    MessageBox.Show(this, $@"Загружаемое изображение не подходит по ширине: {btm.Width}; необходимо: {pbDraw.Width}", @"Ошибка");
+                    btm.Dispose();
+                    return;
+                }
+                if (btm.Height != pbDraw.Height)
+                {
+                    MessageBox.Show(this, $@"Загружаемое изображение не подходит по высоте: {btm.Height}; необходимо: {pbDraw.Height}", @"Ошибка");
+                    btm.Dispose();
+                    return;
+                }
+                _btmFront = btm;
+            }
+            _grFront?.Dispose();
+            _grFront = Graphics.FromImage(_btmFront);
+            pbDraw.Image = _btmFront;
         }
 
         /// <summary>
@@ -152,6 +184,8 @@ namespace DynamicParserExample
                     btnImageDelete.Enabled = value;
                     tmrImagesCount.Enabled = value;
                     btnWordRemove.Enabled = value;
+                    btnSaveImage.Enabled = value;
+                    btnLoadImage.Enabled = value;
                 });
             }
         }
@@ -644,7 +678,6 @@ namespace DynamicParserExample
         /// <param name="e">Данные о событии.</param>
         void FrmExample_Shown(object sender, EventArgs e)
         {
-            pbDraw.Image = _btmFront;
             btnClear_Click(null, null);
             btnNext_Click(null, null);
             RefreshImagesCount();
@@ -659,6 +692,35 @@ namespace DynamicParserExample
         void btnClear_Click(object sender, EventArgs e)
         {
             SafetyExecute(() => _grFront.Clear(Color.White), () => pbDraw.Refresh());
+        }
+
+        /// <summary>
+        /// Обрабатывает событие нажатие кнопки сохранения созданного изображения.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
+        void btnSaveImage_Click(object sender, EventArgs e)
+        {
+            SafetyExecute(() =>
+            {
+                if (dlgSaveImage.ShowDialog(this) != DialogResult.OK) return;
+                using (FileStream fs = new FileStream(dlgSaveImage.FileName, FileMode.Create, FileAccess.Write))
+                    _btmFront.Save(fs, ImageFormat.Bmp);
+            });
+        }
+
+        /// <summary>
+        /// Обрабатывает событие нажатие кнопки загрузки созданного изображения.
+        /// </summary>
+        /// <param name="sender">Вызывающий объект.</param>
+        /// <param name="e">Данные о событии.</param>
+        void btnLoadImage_Click(object sender, EventArgs e)
+        {
+            SafetyExecute(() =>
+            {
+                if (dlgOpenImage.ShowDialog(this) != DialogResult.OK) return;
+                Initialize(dlgOpenImage.FileName);
+            });
         }
 
         /// <summary>

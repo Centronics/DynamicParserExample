@@ -53,8 +53,12 @@
             this.lblElapsedTime = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.grpSourceImage = new System.Windows.Forms.GroupBox();
+            this.btnLoadImage = new System.Windows.Forms.Button();
+            this.btnSaveImage = new System.Windows.Forms.Button();
             this.grpWords = new System.Windows.Forms.GroupBox();
             this.tmrImagesCount = new System.Windows.Forms.Timer(this.components);
+            this.dlgSaveImage = new System.Windows.Forms.SaveFileDialog();
+            this.dlgOpenImage = new System.Windows.Forms.OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.pbDraw)).BeginInit();
             this.grpImages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbBrowse)).BeginInit();
@@ -81,7 +85,7 @@
             // 
             this.btnRecognize.Location = new System.Drawing.Point(5, 85);
             this.btnRecognize.Name = "btnRecognize";
-            this.btnRecognize.Size = new System.Drawing.Size(160, 23);
+            this.btnRecognize.Size = new System.Drawing.Size(114, 23);
             this.btnRecognize.TabIndex = 0;
             this.btnRecognize.Text = "Распознать";
             this.btnRecognize.UseVisualStyleBackColor = true;
@@ -89,9 +93,9 @@
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(166, 85);
+            this.btnClear.Location = new System.Drawing.Point(149, 85);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(97, 23);
+            this.btnClear.Size = new System.Drawing.Size(114, 23);
             this.btnClear.TabIndex = 1;
             this.btnClear.Text = "Очистить";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -110,7 +114,7 @@
             this.lstWords.FormattingEnabled = true;
             this.lstWords.Location = new System.Drawing.Point(9, 39);
             this.lstWords.Name = "lstWords";
-            this.lstWords.Size = new System.Drawing.Size(130, 69);
+            this.lstWords.Size = new System.Drawing.Size(130, 95);
             this.lstWords.TabIndex = 5;
             this.lstWords.KeyUp += new System.Windows.Forms.KeyEventHandler(this.lstWords_KeyUp);
             // 
@@ -118,7 +122,7 @@
             // 
             this.btnWordAdd.Location = new System.Drawing.Point(145, 39);
             this.btnWordAdd.Name = "btnWordAdd";
-            this.btnWordAdd.Size = new System.Drawing.Size(113, 46);
+            this.btnWordAdd.Size = new System.Drawing.Size(113, 69);
             this.btnWordAdd.TabIndex = 3;
             this.btnWordAdd.Text = "Добавить слово";
             this.btnWordAdd.UseVisualStyleBackColor = true;
@@ -126,7 +130,7 @@
             // 
             // btnWordRemove
             // 
-            this.btnWordRemove.Location = new System.Drawing.Point(145, 85);
+            this.btnWordRemove.Location = new System.Drawing.Point(145, 111);
             this.btnWordRemove.Name = "btnWordRemove";
             this.btnWordRemove.Size = new System.Drawing.Size(113, 23);
             this.btnWordRemove.TabIndex = 4;
@@ -166,7 +170,7 @@
             this.grpImages.Controls.Add(this.btnImageSave);
             this.grpImages.Controls.Add(this.btnNext);
             this.grpImages.Controls.Add(this.pbBrowse);
-            this.grpImages.Location = new System.Drawing.Point(8, 126);
+            this.grpImages.Location = new System.Drawing.Point(8, 156);
             this.grpImages.Name = "grpImages";
             this.grpImages.Size = new System.Drawing.Size(267, 90);
             this.grpImages.TabIndex = 12;
@@ -251,7 +255,7 @@
             // 
             this.grpResults.Controls.Add(this.label5);
             this.grpResults.Controls.Add(this.lstResults);
-            this.grpResults.Location = new System.Drawing.Point(281, 126);
+            this.grpResults.Location = new System.Drawing.Point(281, 156);
             this.grpResults.Name = "grpResults";
             this.grpResults.Size = new System.Drawing.Size(265, 90);
             this.grpResults.TabIndex = 6;
@@ -296,6 +300,8 @@
             // 
             // grpSourceImage
             // 
+            this.grpSourceImage.Controls.Add(this.btnLoadImage);
+            this.grpSourceImage.Controls.Add(this.btnSaveImage);
             this.grpSourceImage.Controls.Add(this.pbDraw);
             this.grpSourceImage.Controls.Add(this.label2);
             this.grpSourceImage.Controls.Add(this.lblElapsedTime);
@@ -303,10 +309,30 @@
             this.grpSourceImage.Controls.Add(this.btnClear);
             this.grpSourceImage.Location = new System.Drawing.Point(8, 7);
             this.grpSourceImage.Name = "grpSourceImage";
-            this.grpSourceImage.Size = new System.Drawing.Size(267, 116);
+            this.grpSourceImage.Size = new System.Drawing.Size(267, 143);
             this.grpSourceImage.TabIndex = 17;
             this.grpSourceImage.TabStop = false;
             this.grpSourceImage.Text = "Создание исходного изображения";
+            // 
+            // btnLoadImage
+            // 
+            this.btnLoadImage.Location = new System.Drawing.Point(149, 114);
+            this.btnLoadImage.Name = "btnLoadImage";
+            this.btnLoadImage.Size = new System.Drawing.Size(114, 23);
+            this.btnLoadImage.TabIndex = 17;
+            this.btnLoadImage.Text = "Загрузить";
+            this.btnLoadImage.UseVisualStyleBackColor = true;
+            this.btnLoadImage.Click += new System.EventHandler(this.btnLoadImage_Click);
+            // 
+            // btnSaveImage
+            // 
+            this.btnSaveImage.Location = new System.Drawing.Point(5, 114);
+            this.btnSaveImage.Name = "btnSaveImage";
+            this.btnSaveImage.Size = new System.Drawing.Size(114, 23);
+            this.btnSaveImage.TabIndex = 16;
+            this.btnSaveImage.Text = "Сохранить";
+            this.btnSaveImage.UseVisualStyleBackColor = true;
+            this.btnSaveImage.Click += new System.EventHandler(this.btnSaveImage_Click);
             // 
             // grpWords
             // 
@@ -317,7 +343,7 @@
             this.grpWords.Controls.Add(this.btnWordAdd);
             this.grpWords.Location = new System.Drawing.Point(281, 7);
             this.grpWords.Name = "grpWords";
-            this.grpWords.Size = new System.Drawing.Size(265, 116);
+            this.grpWords.Size = new System.Drawing.Size(265, 143);
             this.grpWords.TabIndex = 18;
             this.grpWords.TabStop = false;
             this.grpWords.Text = "Искомые слова";
@@ -328,11 +354,19 @@
             this.tmrImagesCount.Interval = 1000;
             this.tmrImagesCount.Tick += new System.EventHandler(this.tmrImagesCount_Tick);
             // 
+            // dlgSaveImage
+            // 
+            this.dlgSaveImage.Filter = "BMP|*.bmp";
+            // 
+            // dlgOpenImage
+            // 
+            this.dlgOpenImage.Filter = "BMP|*.bmp";
+            // 
             // FrmExample
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(554, 221);
+            this.ClientSize = new System.Drawing.Size(554, 252);
             this.Controls.Add(this.grpWords);
             this.Controls.Add(this.grpSourceImage);
             this.Controls.Add(this.grpResults);
@@ -388,6 +422,10 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Timer tmrImagesCount;
+        private System.Windows.Forms.Button btnLoadImage;
+        private System.Windows.Forms.Button btnSaveImage;
+        private System.Windows.Forms.SaveFileDialog dlgSaveImage;
+        private System.Windows.Forms.OpenFileDialog dlgOpenImage;
     }
 }
 
