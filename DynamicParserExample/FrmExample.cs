@@ -102,7 +102,7 @@ namespace DynamicParserExample
         bool _draw;
 
         /// <summary>
-        ///     Объект для рисования в окне создания распознаваемого изображения.
+        ///     Поверхность рисования в окне создания распознаваемого изображения.
         /// </summary>
         Graphics _grFront;
 
@@ -193,6 +193,15 @@ namespace DynamicParserExample
                 Bitmap btm;
                 using (FileStream fs = new FileStream(btmPath, FileMode.Open, FileAccess.Read))
                     btm = new Bitmap(fs);
+                ImageFormat iformat = btm.RawFormat;
+                if (!iformat.Equals(ImageFormat.Bmp))
+                {
+                    MessageBox.Show(this,
+                        $@"Загружаемое изображение не подходит по формату: {iformat}; необходимо: {ImageFormat.Bmp}",
+                        @"Ошибка");
+                    btm.Dispose();
+                    return;
+                }
                 if (btm.Width != pbDraw.Width)
                 {
                     MessageBox.Show(this,
@@ -602,6 +611,7 @@ namespace DynamicParserExample
                         InvokeFunction(() => lstResults.Items.Clear());
                         if ((results?.Count ?? 0) <= 0)
                         {
+                            InvokeFunction(() => grpResults.Text = $@"{_strGrpResults} (0)");
                             MessageInOtherThread(@"Распознанные образы отсутствуют. Отсутствуют слова или образы.");
                             return;
                         }
@@ -727,7 +737,7 @@ namespace DynamicParserExample
         /// <param name="e">Данные о событии.</param>
         void btnClear_Click(object sender, EventArgs e)
         {
-            SafetyExecute(() => _grFront.Clear(Color.White), () => pbDraw.Refresh());
+            SafetyExecute(()=> _grFront.Clear(Color.White), () => pbDraw.Refresh());
         }
 
         /// <summary>
