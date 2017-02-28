@@ -689,7 +689,6 @@ namespace DynamicParserExample
         /// <param name="e">Данные о событии.</param>
         void tmrImagesCount_Tick(object sender, EventArgs e)
         {
-
             RefreshImagesCount();
         }
 
