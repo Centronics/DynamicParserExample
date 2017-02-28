@@ -5,44 +5,38 @@ using System.Windows.Forms;
 namespace DynamicParserExample
 {
     /// <summary>
-    /// Форма ввода нового искомого символа.
+    ///     Форма ввода нового искомого символа.
     /// </summary>
     public partial class FrmSymbol : Form
     {
         /// <summary>
-        /// Задаёт толщину и цвет выводимой линии.
+        ///     Задаёт толщину и цвет выводимой линии.
         /// </summary>
         readonly Pen _blackPen = new Pen(Color.Black, 2.0f);
 
         /// <summary>
-        /// Поверхность для рисования образа.
-        /// </summary>
-        readonly Graphics _grFront;
-
-        /// <summary>
-        /// Изображение создаваемого образа.
+        ///     Изображение создаваемого образа.
         /// </summary>
         readonly Bitmap _btmFront;
 
         /// <summary>
-        /// Текущий образ, который был сохранён.
-        /// Если образ не сохранён, то содержит null, в противном случае содержит образ искомой буквы.
+        ///     Поверхность для рисования образа.
         /// </summary>
-        public ImageRect LastImage { get; private set; }
+        readonly Graphics _grFront;
 
         /// <summary>
-        /// Определяет, разрешён вывод создаваемой пользователем линии на экран или нет.
-        /// Значение true - вывод разрешён, в противном случае - false.
+        ///     Определяет, разрешён вывод создаваемой пользователем линии на экран или нет.
+        ///     Значение true - вывод разрешён, в противном случае - false.
         /// </summary>
         bool _draw;
 
         /// <summary>
-        /// Необходимо для обозначения временного интервала, необходимого для задержки реакции на нажатую клавишу.
+        ///     Необходимо для обозначения временного интервала, необходимого для задержки реакции на нажатую клавишу.
         /// </summary>
         bool _timedOut;
 
         /// <summary>
-        /// Конструктор формы ввода нового искомого символа.
+        ///     Конструктор формы ввода нового искомого символа.
         /// </summary>
         public FrmSymbol()
         {
@@ -53,7 +47,13 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        /// Запрещает вывод создаваемой пользователем линии на экран.
+        ///     Текущий образ, который был сохранён.
+        ///     Если образ не сохранён, то содержит null, в противном случае содержит образ искомой буквы.
+        /// </summary>
+        public ImageRect LastImage { get; private set; }
+
+        /// <summary>
+        ///     Запрещает вывод создаваемой пользователем линии на экран.
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
@@ -63,7 +63,7 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        /// Запрещает вывод создаваемой пользователем линии на экран.
+        ///     Запрещает вывод создаваемой пользователем линии на экран.
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
@@ -73,7 +73,7 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        /// Разрешает вывод создаваемой пользователем линии на экран.
+        ///     Разрешает вывод создаваемой пользователем линии на экран.
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
@@ -88,7 +88,7 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        /// Выводит создаваемую пользователем линию на экран, если вывод разрешён.
+        ///     Выводит создаваемую пользователем линию на экран, если вывод разрешён.
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
@@ -103,7 +103,7 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        /// Сохраняет текущий образ искомой буквы.
+        ///     Сохраняет текущий образ искомой буквы.
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
@@ -113,7 +113,8 @@ namespace DynamicParserExample
             {
                 if (string.IsNullOrWhiteSpace(txtSymbol.Text))
                 {
-                    MessageBox.Show(this, @"Необходимо вписать название символа. Оно не может быть более одного знака и состоять из невидимых символов.");
+                    MessageBox.Show(this,
+                        @"Необходимо вписать название символа. Оно не может быть более одного знака и состоять из невидимых символов.");
                     tmrPressWait.Enabled = true;
                     _timedOut = false;
                     return;
@@ -124,7 +125,7 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        /// Очищает поверхность для рисования искомого образа.
+        ///     Очищает поверхность для рисования искомого образа.
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
@@ -135,7 +136,7 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        /// Подготавливает поверхность для рисования искомого образа.
+        ///     Подготавливает поверхность для рисования искомого образа.
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
@@ -149,7 +150,7 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        /// Обрабатывает нажатия клавиш пользователем.
+        ///     Обрабатывает нажатия клавиш пользователем.
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
@@ -173,7 +174,7 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        /// Предотвращает реакцию системы на некорректный ввод.
+        ///     Предотвращает реакцию системы на некорректный ввод.
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
@@ -181,15 +182,15 @@ namespace DynamicParserExample
         {
             RunFunction(() =>
             {
-                if ((Keys)e.KeyChar == Keys.Enter || (Keys)e.KeyChar == Keys.Tab ||
-                    (Keys)e.KeyChar == Keys.Escape ||
-                    (Keys)e.KeyChar == Keys.Pause || (Keys)e.KeyChar == Keys.XButton1 || e.KeyChar == 15)
+                if ((Keys) e.KeyChar == Keys.Enter || (Keys) e.KeyChar == Keys.Tab ||
+                    (Keys) e.KeyChar == Keys.Escape ||
+                    (Keys) e.KeyChar == Keys.Pause || (Keys) e.KeyChar == Keys.XButton1 || e.KeyChar == 15)
                     e.Handled = true;
             });
         }
 
         /// <summary>
-        /// Предотвращает реакцию системы на некорректный ввод.
+        ///     Предотвращает реакцию системы на некорректный ввод.
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
@@ -197,14 +198,14 @@ namespace DynamicParserExample
         {
             RunFunction(() =>
             {
-                if ((Keys)e.KeyChar == Keys.Enter || (Keys)e.KeyChar == Keys.Tab || (Keys)e.KeyChar == Keys.Escape ||
-                    (Keys)e.KeyChar == Keys.Pause || (Keys)e.KeyChar == Keys.XButton1 || e.KeyChar == 15)
+                if ((Keys) e.KeyChar == Keys.Enter || (Keys) e.KeyChar == Keys.Tab || (Keys) e.KeyChar == Keys.Escape ||
+                    (Keys) e.KeyChar == Keys.Pause || (Keys) e.KeyChar == Keys.XButton1 || e.KeyChar == 15)
                     e.Handled = true;
             });
         }
 
         /// <summary>
-        /// Происходит, когда отсчитываемое время реакции на нажатую клавишу подошло к концу.
+        ///     Происходит, когда отсчитываемое время реакции на нажатую клавишу подошло к концу.
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
@@ -215,7 +216,7 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        /// Выполняет функцию с выводом сообщения об ошибке на экран.
+        ///     Выполняет функцию с выводом сообщения об ошибке на экран.
         /// </summary>
         /// <param name="act">Выполняемая функция.</param>
         void RunFunction(Action act)

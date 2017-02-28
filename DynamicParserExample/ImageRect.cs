@@ -9,63 +9,17 @@ using DynamicProcessor;
 namespace DynamicParserExample
 {
     /// <summary>
-    /// Предназначен для работы с образами искомых букв.
+    ///     Предназначен для работы с образами искомых букв.
     /// </summary>
     public class ImageRect
     {
         /// <summary>
-        /// Расширение изображения образа искомой буквы.
+        ///     Расширение изображения образа искомой буквы.
         /// </summary>
         public const string ExtImg = "bmp";
 
         /// <summary>
-        /// Путь, по которому осуществляется поиск искомых образов букв.
-        /// </summary>
-        public static string SearchPath { get; } = Application.StartupPath;
-
-        /// <summary>
-        /// Получает изображения букв, поиск которых следует осуществить.
-        /// </summary>
-        static IEnumerable<string> BitmapFiles => Directory.GetFiles(SearchPath, $"*.{ExtImg}");
-
-        /// <summary>
-        /// Содержит текущее изображение.
-        /// </summary>
-        public Bitmap Bitm { get; }
-
-        /// <summary>
-        /// Полный путь к текущему образу.
-        /// </summary>
-        public string ImagePath { get; }
-
-        /// <summary>
-        /// Определяет значение поля <see cref="DynamicParser.Processor.Tag"/>.
-        /// </summary>
-        public string SymbolString { get; }
-
-        /// <summary>
-        /// Символ текущей буквы в виде строки.
-        /// </summary>
-        public string SymbolName { get; }
-
-        /// <summary>
-        /// Символ текущей буквы.
-        /// </summary>
-        public char Symbol { get; }
-
-        /// <summary>
-        /// Номер текущего образа.
-        /// </summary>
-        public ulong Number { get; }
-
-        /// <summary>
-        /// Получает значение, является ли данный файл образом, предназначенным для распознавания.
-        /// Значение true означает, что данный файл является образом для распознавания, false - нет.
-        /// </summary>
-        public bool IsSymbol { get; }
-
-        /// <summary>
-        /// Инициализирует экземпляр образа буквы для распознавания.
+        ///     Инициализирует экземпляр образа буквы для распознавания.
         /// </summary>
         /// <param name="btm">Изображение буквы.</param>
         /// <param name="tag">Название буквы.</param>
@@ -89,7 +43,87 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        /// Сохраняет указанный образ буквы с указанным названием.
+        ///     Путь, по которому осуществляется поиск искомых образов букв.
+        /// </summary>
+        public static string SearchPath { get; } = Application.StartupPath;
+
+        /// <summary>
+        ///     Получает изображения букв, поиск которых следует осуществить.
+        /// </summary>
+        static IEnumerable<string> BitmapFiles => Directory.GetFiles(SearchPath, $"*.{ExtImg}");
+
+        /// <summary>
+        ///     Содержит текущее изображение.
+        /// </summary>
+        public Bitmap Bitm { get; }
+
+        /// <summary>
+        ///     Полный путь к текущему образу.
+        /// </summary>
+        public string ImagePath { get; }
+
+        /// <summary>
+        ///     Определяет значение поля <see cref="DynamicParser.Processor.Tag" />.
+        /// </summary>
+        public string SymbolString { get; }
+
+        /// <summary>
+        ///     Символ текущей буквы в виде строки.
+        /// </summary>
+        public string SymbolName { get; }
+
+        /// <summary>
+        ///     Символ текущей буквы.
+        /// </summary>
+        public char Symbol { get; }
+
+        /// <summary>
+        ///     Номер текущего образа.
+        /// </summary>
+        public ulong Number { get; }
+
+        /// <summary>
+        ///     Получает значение, является ли данный файл образом, предназначенным для распознавания.
+        ///     Значение true означает, что данный файл является образом для распознавания, false - нет.
+        /// </summary>
+        public bool IsSymbol { get; }
+
+        /// <summary>
+        ///     Получает текущее изображение в виде набора знаков объектов карты.
+        /// </summary>
+        public SignValue[,] ImageMap
+        {
+            get
+            {
+                if (!IsSymbol)
+                    return null;
+                SignValue[,] mas = new SignValue[Bitm.Width, Bitm.Height];
+                for (int y = 0; y < Bitm.Height; y++)
+                for (int x = 0; x < Bitm.Width; x++)
+                    mas[x, y] = new SignValue(Bitm.GetPixel(x, y));
+                return mas;
+            }
+        }
+
+        /// <summary>
+        ///     Получает все имеющиеся на данный момент образы букв для распознавания.
+        /// </summary>
+        public static IEnumerable<ImageRect> Images
+        {
+            get
+            {
+                foreach (string fname in BitmapFiles)
+                    using (FileStream fs = new FileStream(fname, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        ImageRect ir = new ImageRect(new Bitmap(fs), Path.GetFileNameWithoutExtension(fname), fname);
+                        if (ir.IsSymbol)
+                            yield return ir;
+                    }
+            }
+        }
+
+        /// <summary>
+        ///     Сохраняет указанный образ буквы с указанным названием.
         /// </summary>
         /// <param name="name">Название буквы.</param>
         /// <param name="btm">Изображение буквы.</param>
@@ -108,41 +142,7 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        /// Получает текущее изображение в виде набора знаков объектов карты.
-        /// </summary>
-        public SignValue[,] ImageMap
-        {
-            get
-            {
-                if (!IsSymbol)
-                    return null;
-                SignValue[,] mas = new SignValue[Bitm.Width, Bitm.Height];
-                for (int y = 0; y < Bitm.Height; y++)
-                    for (int x = 0; x < Bitm.Width; x++)
-                        mas[x, y] = new SignValue(Bitm.GetPixel(x, y));
-                return mas;
-            }
-        }
-
-        /// <summary>
-        /// Получает все имеющиеся на данный момент образы букв для распознавания.
-        /// </summary>
-        public static IEnumerable<ImageRect> Images
-        {
-            get
-            {
-                foreach (string fname in BitmapFiles)
-                    using (FileStream fs = new FileStream(fname, FileMode.Open, FileAccess.Read))
-                    {
-                        ImageRect ir = new ImageRect(new Bitmap(fs), Path.GetFileNameWithoutExtension(fname), fname);
-                        if (ir.IsSymbol)
-                            yield return ir;
-                    }
-            }
-        }
-
-        /// <summary>
-        /// Выполняет разбор имени файла с образом буквы, выделяя номер буквы.
+        ///     Выполняет разбор имени файла с образом буквы, выделяя номер буквы.
         /// </summary>
         /// <param name="number">Возвращает номер текущей буквы.</param>
         /// <param name="tag">Имя файла без расширения.</param>
@@ -162,7 +162,7 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        /// Генерирует имя нового образа, увеличивая его номер.
+        ///     Генерирует имя нового образа, увеличивая его номер.
         /// </summary>
         /// <param name="name">Имя образа, на основании которого требуется сгенерировать новое имя.</param>
         /// <returns>Возвращает строку полного пути к файлу нового образа.</returns>
@@ -183,7 +183,9 @@ namespace DynamicParserExample
                 }
             }
             char prefix = char.IsUpper(name) ? 'b' : 'm';
-            return imageRect != null ? $@"{SearchPath}\{prefix}{name}{unchecked(imageRect.Number + 1)}.{ExtImg}" : $@"{SearchPath}\{prefix}{name}0.{ExtImg}";
+            return imageRect != null
+                ? $@"{SearchPath}\{prefix}{name}{unchecked(imageRect.Number + 1)}.{ExtImg}"
+                : $@"{SearchPath}\{prefix}{name}0.{ExtImg}";
         }
     }
 }
