@@ -112,6 +112,13 @@ namespace DynamicParserExample
         int _selectedIndex = -1;
 
         /// <summary>
+        ///     Содержит количество искомых образов, которое было на момент последней проверки.
+        ///     Предназначено для того, чтобы в случае уменьшения их количества (путём удаления файлов)
+        ///     обновить отображаемый образ.
+        /// </summary>
+        long _imageLastCount = -1;
+
+        /// <summary>
         ///     Поток, отвечающий за выполнение процедуры распознавания.
         /// </summary>
         Thread _workThread;
@@ -479,14 +486,16 @@ namespace DynamicParserExample
                     txtImagesCount.Text = count.ToString();
                     if (count <= 0)
                     {
+                        _imageLastCount = -1;
                         SymbolBrowseClear();
                         btnImageDelete.Enabled = false;
                         btnNext.Enabled = false;
                         btnPrev.Enabled = false;
                         return;
                     }
-                    if (!btnImageDelete.Enabled || !btnNext.Enabled || !btnPrev.Enabled)
+                    if (!btnImageDelete.Enabled || !btnNext.Enabled || !btnPrev.Enabled || _imageLastCount > count)
                         btnNext_Click(null, null);
+                    _imageLastCount = count;
                     btnImageDelete.Enabled = true;
                     btnNext.Enabled = true;
                     btnPrev.Enabled = true;

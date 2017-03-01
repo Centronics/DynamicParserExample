@@ -75,7 +75,7 @@ namespace DynamicParserExample
         public string SymbolName { get; }
 
         /// <summary>
-        ///     Символ текущей буквы.
+        ///     Символьное обозначение текущей буквы.
         /// </summary>
         public char Symbol { get; }
 
