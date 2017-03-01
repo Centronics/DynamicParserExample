@@ -107,11 +107,6 @@ namespace DynamicParserExample
         Graphics _grFront;
 
         /// <summary>
-        ///     Отражает индекс выделенного в данный момент искомого слова.
-        /// </summary>
-        int _selectedIndex = -1;
-
-        /// <summary>
         ///     Содержит количество искомых образов, которое было на момент последней проверки.
         ///     Предназначено для того, чтобы в случае уменьшения их количества (путём удаления файлов)
         ///     обновить отображаемый образ.
@@ -119,19 +114,14 @@ namespace DynamicParserExample
         long _imageLastCount = -1;
 
         /// <summary>
+        ///     Отражает индекс выделенного в данный момент искомого слова.
+        /// </summary>
+        int _selectedIndex = -1;
+
+        /// <summary>
         ///     Поток, отвечающий за выполнение процедуры распознавания.
         /// </summary>
         Thread _workThread;
-
-        /// <summary>
-        ///     Ширина образа для распознавания.
-        /// </summary>
-        public static int ImageWidth { get; private set; }
-
-        /// <summary>
-        ///     Высота образа для распознавания.
-        /// </summary>
-        public static int ImageHeight { get; private set; }
 
         /// <summary>
         ///     Конструктор основной формы приложения.
@@ -156,6 +146,16 @@ namespace DynamicParserExample
                 Process.GetCurrentProcess().Kill();
             }
         }
+
+        /// <summary>
+        ///     Ширина образа для распознавания.
+        /// </summary>
+        public static int ImageWidth { get; private set; }
+
+        /// <summary>
+        ///     Высота образа для распознавания.
+        /// </summary>
+        public static int ImageHeight { get; private set; }
 
         /// <summary>
         ///     Отключает или включает доступность кнопок на время выполнения операции.
@@ -317,7 +317,8 @@ namespace DynamicParserExample
         }
 
         /// <summary>
-        ///     Загружает искомые слова из файла, имя которого содержится в константе <see cref="StrWordsFile" /> с расширением txt.
+        ///     Загружает искомые слова из файла, имя которого содержится в константе <see cref="StrWordsFile" /> с расширением
+        ///     txt.
         ///     Кодировка: UTF-8.
         /// </summary>
         void WordsLoad()
@@ -758,7 +759,7 @@ namespace DynamicParserExample
         /// <param name="e">Данные о событии.</param>
         void btnClear_Click(object sender, EventArgs e)
         {
-            SafetyExecute(()=> _grFront.Clear(Color.White), () => pbDraw.Refresh());
+            SafetyExecute(() => _grFront.Clear(Color.White), () => pbDraw.Refresh());
         }
 
         /// <summary>
