@@ -33,6 +33,8 @@ namespace DynamicParserExample
             ulong? number;
             if (!NameParser(out number, tag) || number == null)
                 return;
+            if (btm.Width != FrmExample.ImageWidth || btm.Height != FrmExample.ImageHeight)
+                return;
             SymbolString = tag.Substring(1);
             Symbol = char.ToUpper(tag[1]);
             SymbolName = new string(Symbol, 1);

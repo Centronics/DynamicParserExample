@@ -117,6 +117,16 @@ namespace DynamicParserExample
         Thread _workThread;
 
         /// <summary>
+        ///     Ширина образа для распознавания.
+        /// </summary>
+        public static int ImageWidth { get; private set; }
+
+        /// <summary>
+        ///     Высота образа для распознавания.
+        /// </summary>
+        public static int ImageHeight { get; private set; }
+
+        /// <summary>
         ///     Конструктор основной формы приложения.
         /// </summary>
         public FrmExample()
@@ -129,6 +139,8 @@ namespace DynamicParserExample
                 _unknownSymbolName = lblSymbolName.Text;
                 _strGrpResults = grpResults.Text;
                 _strGrpWords = grpWords.Text;
+                ImageWidth = pbBrowse.Width;
+                ImageHeight = pbBrowse.Height;
             }
             catch (Exception ex)
             {

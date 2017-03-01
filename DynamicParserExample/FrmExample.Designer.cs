@@ -377,7 +377,7 @@
             this.MinimizeBox = false;
             this.Name = "FrmExample";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Пример работы библиотеки DynamicParser";
+            this.Text = "Пример применения библиотеки DynamicParser";
             this.Shown += new System.EventHandler(this.FrmExample_Shown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FrmExample_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.pbDraw)).EndInit();
