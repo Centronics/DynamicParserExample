@@ -475,14 +475,11 @@ namespace DynamicParserExample
             SafetyExecute(() =>
             {
                 using (FrmSymbol fs = new FrmSymbol())
-                {
-                    if (fs.ShowDialog() != DialogResult.OK) return;
-                    pbBrowse.Image = fs.LastImage.Bitm;
-                    lblSymbolName.Text = fs.LastImage.SymbolName;
-                }
+                    fs.ShowDialog();
             }, () =>
             {
                 RefreshImagesCount();
+                btnNext_Click(null, null);
                 tmrImagesCount.Enabled = true;
             });
         }
