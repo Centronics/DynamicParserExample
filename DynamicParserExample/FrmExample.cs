@@ -55,11 +55,6 @@ namespace DynamicParserExample
         readonly Pen _blackPen = new Pen(Color.Black, 2.0f);
 
         /// <summary>
-        ///     Задаёт цвет и ширину для стирания в окне создания распознаваемого изображения.
-        /// </summary>
-        readonly Pen _whitePen = new Pen(Color.White, 2.0f);
-
-        /// <summary>
         ///     Таймер для измерения времени, затраченного на распознавание.
         /// </summary>
         readonly Stopwatch _stopwatch = new Stopwatch();
@@ -89,6 +84,11 @@ namespace DynamicParserExample
         ///     Содержит изначальное значение поля "Название" искомого образа буквы.
         /// </summary>
         readonly string _unknownSymbolName;
+
+        /// <summary>
+        ///     Задаёт цвет и ширину для стирания в окне создания распознаваемого изображения.
+        /// </summary>
+        readonly Pen _whitePen = new Pen(Color.White, 2.0f);
 
         /// <summary>
         ///     Изображение, которое выводится в окне создания распознаваемого изображения.
