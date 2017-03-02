@@ -55,6 +55,11 @@ namespace DynamicParserExample
         readonly Pen _blackPen = new Pen(Color.Black, 2.0f);
 
         /// <summary>
+        ///     Задаёт цвет и ширину для стирания в окне создания распознаваемого изображения.
+        /// </summary>
+        readonly Pen _whitePen = new Pen(Color.White, 2.0f);
+
+        /// <summary>
         ///     Таймер для измерения времени, затраченного на распознавание.
         /// </summary>
         readonly Stopwatch _stopwatch = new Stopwatch();
@@ -252,7 +257,16 @@ namespace DynamicParserExample
         void pbDraw_MouseDown(object sender, MouseEventArgs e)
         {
             _draw = true;
-            _grFront.DrawRectangle(_blackPen, new Rectangle(e.X, e.Y, 1, 1));
+            // ReSharper disable once SwitchStatementMissingSomeCases
+            switch (e.Button)
+            {
+                case MouseButtons.Left:
+                    _grFront.DrawRectangle(_blackPen, new Rectangle(e.X, e.Y, 1, 1));
+                    break;
+                case MouseButtons.Right:
+                    _grFront.DrawRectangle(_whitePen, new Rectangle(e.X, e.Y, 1, 1));
+                    break;
+            }
         }
 
         /// <summary>
@@ -733,8 +747,18 @@ namespace DynamicParserExample
         {
             SafetyExecute(() =>
             {
-                if (_draw)
-                    _grFront.DrawRectangle(_blackPen, new Rectangle(e.X, e.Y, 1, 1));
+                if (!_draw)
+                    return;
+                // ReSharper disable once SwitchStatementMissingSomeCases
+                switch (e.Button)
+                {
+                    case MouseButtons.Left:
+                        _grFront.DrawRectangle(_blackPen, new Rectangle(e.X, e.Y, 1, 1));
+                        break;
+                    case MouseButtons.Right:
+                        _grFront.DrawRectangle(_whitePen, new Rectangle(e.X, e.Y, 1, 1));
+                        break;
+                }
             }, () => pbDraw.Refresh());
         }
 

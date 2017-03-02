@@ -312,7 +312,7 @@
             this.grpSourceImage.Size = new System.Drawing.Size(267, 143);
             this.grpSourceImage.TabIndex = 17;
             this.grpSourceImage.TabStop = false;
-            this.grpSourceImage.Text = "Создание исходного изображения";
+            this.grpSourceImage.Text = "Изображение (ПКМ - стереть / ЛКМ - рисовать)";
             // 
             // btnLoadImage
             // 
