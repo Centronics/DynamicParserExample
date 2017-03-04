@@ -30,22 +30,22 @@
         {
             this.components = new System.ComponentModel.Container();
             this.pbDraw = new System.Windows.Forms.PictureBox();
-            this.btnRecognize = new System.Windows.Forms.Button();
-            this.btnClear = new System.Windows.Forms.Button();
+            this.btnRecognizeImage = new System.Windows.Forms.Button();
+            this.btnClearImage = new System.Windows.Forms.Button();
             this.lstResults = new System.Windows.Forms.ListBox();
             this.lstWords = new System.Windows.Forms.ListBox();
             this.btnWordAdd = new System.Windows.Forms.Button();
             this.btnWordRemove = new System.Windows.Forms.Button();
             this.txtWord = new System.Windows.Forms.TextBox();
-            this.btnImageSave = new System.Windows.Forms.Button();
+            this.btnImageCreate = new System.Windows.Forms.Button();
             this.grpImages = new System.Windows.Forms.GroupBox();
             this.txtImagesCount = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.lblSymbolName = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.btnImageDelete = new System.Windows.Forms.Button();
-            this.btnPrev = new System.Windows.Forms.Button();
-            this.btnNext = new System.Windows.Forms.Button();
+            this.btnImagePrev = new System.Windows.Forms.Button();
+            this.btnImageNext = new System.Windows.Forms.Button();
             this.pbBrowse = new System.Windows.Forms.PictureBox();
             this.grpResults = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -81,25 +81,25 @@
             this.pbDraw.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbDraw_MouseMove);
             this.pbDraw.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pbDraw_MouseUp);
             // 
-            // btnRecognize
+            // btnRecognizeImage
             // 
-            this.btnRecognize.Location = new System.Drawing.Point(5, 85);
-            this.btnRecognize.Name = "btnRecognize";
-            this.btnRecognize.Size = new System.Drawing.Size(114, 23);
-            this.btnRecognize.TabIndex = 0;
-            this.btnRecognize.Text = "Распознать";
-            this.btnRecognize.UseVisualStyleBackColor = true;
-            this.btnRecognize.Click += new System.EventHandler(this.btnRecognize_Click);
+            this.btnRecognizeImage.Location = new System.Drawing.Point(5, 85);
+            this.btnRecognizeImage.Name = "btnRecognizeImage";
+            this.btnRecognizeImage.Size = new System.Drawing.Size(114, 23);
+            this.btnRecognizeImage.TabIndex = 0;
+            this.btnRecognizeImage.Text = "Распознать";
+            this.btnRecognizeImage.UseVisualStyleBackColor = true;
+            this.btnRecognizeImage.Click += new System.EventHandler(this.btnRecognizeImage_Click);
             // 
-            // btnClear
+            // btnClearImage
             // 
-            this.btnClear.Location = new System.Drawing.Point(149, 85);
-            this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(114, 23);
-            this.btnClear.TabIndex = 1;
-            this.btnClear.Text = "Очистить";
-            this.btnClear.UseVisualStyleBackColor = true;
-            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            this.btnClearImage.Location = new System.Drawing.Point(149, 85);
+            this.btnClearImage.Name = "btnClearImage";
+            this.btnClearImage.Size = new System.Drawing.Size(114, 23);
+            this.btnClearImage.TabIndex = 1;
+            this.btnClearImage.Text = "Очистить";
+            this.btnClearImage.UseVisualStyleBackColor = true;
+            this.btnClearImage.Click += new System.EventHandler(this.btnClearImage_Click);
             // 
             // lstResults
             // 
@@ -149,15 +149,15 @@
             this.txtWord.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtWord_KeyPress);
             this.txtWord.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtWord_KeyUp);
             // 
-            // btnImageSave
+            // btnImageCreate
             // 
-            this.btnImageSave.Location = new System.Drawing.Point(149, 35);
-            this.btnImageSave.Name = "btnImageSave";
-            this.btnImageSave.Size = new System.Drawing.Size(114, 23);
-            this.btnImageSave.TabIndex = 8;
-            this.btnImageSave.Text = "Создать образ";
-            this.btnImageSave.UseVisualStyleBackColor = true;
-            this.btnImageSave.Click += new System.EventHandler(this.btnImageSave_Click);
+            this.btnImageCreate.Location = new System.Drawing.Point(149, 35);
+            this.btnImageCreate.Name = "btnImageCreate";
+            this.btnImageCreate.Size = new System.Drawing.Size(114, 23);
+            this.btnImageCreate.TabIndex = 8;
+            this.btnImageCreate.Text = "Создать образ";
+            this.btnImageCreate.UseVisualStyleBackColor = true;
+            this.btnImageCreate.Click += new System.EventHandler(this.btnImageCreate_Click);
             // 
             // grpImages
             // 
@@ -166,9 +166,9 @@
             this.grpImages.Controls.Add(this.lblSymbolName);
             this.grpImages.Controls.Add(this.label1);
             this.grpImages.Controls.Add(this.btnImageDelete);
-            this.grpImages.Controls.Add(this.btnPrev);
-            this.grpImages.Controls.Add(this.btnImageSave);
-            this.grpImages.Controls.Add(this.btnNext);
+            this.grpImages.Controls.Add(this.btnImagePrev);
+            this.grpImages.Controls.Add(this.btnImageCreate);
+            this.grpImages.Controls.Add(this.btnImageNext);
             this.grpImages.Controls.Add(this.pbBrowse);
             this.grpImages.Location = new System.Drawing.Point(8, 156);
             this.grpImages.Name = "grpImages";
@@ -222,25 +222,25 @@
             this.btnImageDelete.UseVisualStyleBackColor = true;
             this.btnImageDelete.Click += new System.EventHandler(this.btnImageDelete_Click);
             // 
-            // btnPrev
+            // btnImagePrev
             // 
-            this.btnPrev.Location = new System.Drawing.Point(55, 62);
-            this.btnPrev.Name = "btnPrev";
-            this.btnPrev.Size = new System.Drawing.Size(88, 23);
-            this.btnPrev.TabIndex = 11;
-            this.btnPrev.Text = "Предыдущий";
-            this.btnPrev.UseVisualStyleBackColor = true;
-            this.btnPrev.Click += new System.EventHandler(this.btnPrev_Click);
+            this.btnImagePrev.Location = new System.Drawing.Point(55, 62);
+            this.btnImagePrev.Name = "btnImagePrev";
+            this.btnImagePrev.Size = new System.Drawing.Size(88, 23);
+            this.btnImagePrev.TabIndex = 11;
+            this.btnImagePrev.Text = "Предыдущий";
+            this.btnImagePrev.UseVisualStyleBackColor = true;
+            this.btnImagePrev.Click += new System.EventHandler(this.btnImagePrev_Click);
             // 
-            // btnNext
+            // btnImageNext
             // 
-            this.btnNext.Location = new System.Drawing.Point(55, 35);
-            this.btnNext.Name = "btnNext";
-            this.btnNext.Size = new System.Drawing.Size(88, 23);
-            this.btnNext.TabIndex = 10;
-            this.btnNext.Text = "Следующий";
-            this.btnNext.UseVisualStyleBackColor = true;
-            this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
+            this.btnImageNext.Location = new System.Drawing.Point(55, 35);
+            this.btnImageNext.Name = "btnImageNext";
+            this.btnImageNext.Size = new System.Drawing.Size(88, 23);
+            this.btnImageNext.TabIndex = 10;
+            this.btnImageNext.Text = "Следующий";
+            this.btnImageNext.UseVisualStyleBackColor = true;
+            this.btnImageNext.Click += new System.EventHandler(this.btnImageNext_Click);
             // 
             // pbBrowse
             // 
@@ -305,8 +305,8 @@
             this.grpSourceImage.Controls.Add(this.pbDraw);
             this.grpSourceImage.Controls.Add(this.label2);
             this.grpSourceImage.Controls.Add(this.lblElapsedTime);
-            this.grpSourceImage.Controls.Add(this.btnRecognize);
-            this.grpSourceImage.Controls.Add(this.btnClear);
+            this.grpSourceImage.Controls.Add(this.btnRecognizeImage);
+            this.grpSourceImage.Controls.Add(this.btnClearImage);
             this.grpSourceImage.Location = new System.Drawing.Point(8, 7);
             this.grpSourceImage.Name = "grpSourceImage";
             this.grpSourceImage.Size = new System.Drawing.Size(267, 143);
@@ -397,19 +397,19 @@
         #endregion
 
         private System.Windows.Forms.PictureBox pbDraw;
-        private System.Windows.Forms.Button btnRecognize;
-        private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Button btnRecognizeImage;
+        private System.Windows.Forms.Button btnClearImage;
         private System.Windows.Forms.ListBox lstResults;
         private System.Windows.Forms.ListBox lstWords;
         private System.Windows.Forms.Button btnWordAdd;
         private System.Windows.Forms.Button btnWordRemove;
         private System.Windows.Forms.TextBox txtWord;
-        private System.Windows.Forms.Button btnImageSave;
+        private System.Windows.Forms.Button btnImageCreate;
         private System.Windows.Forms.GroupBox grpImages;
         private System.Windows.Forms.GroupBox grpResults;
         private System.Windows.Forms.PictureBox pbBrowse;
-        private System.Windows.Forms.Button btnPrev;
-        private System.Windows.Forms.Button btnNext;
+        private System.Windows.Forms.Button btnImagePrev;
+        private System.Windows.Forms.Button btnImageNext;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblSymbolName;
         private System.Windows.Forms.Label label2;

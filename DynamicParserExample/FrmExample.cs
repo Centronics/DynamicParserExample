@@ -71,7 +71,7 @@ namespace DynamicParserExample
 
         /// <summary>
         ///     Текст кнопки "Распознать". Сохраняет исходное значение свойства <see cref="Button.Text" /> кнопки
-        ///     <see cref="btnRecognize" />.
+        ///     <see cref="btnRecognizeImage" />.
         /// </summary>
         readonly string _strRecog;
 
@@ -137,7 +137,7 @@ namespace DynamicParserExample
             {
                 InitializeComponent();
                 Initialize();
-                _strRecog = btnRecognize.Text;
+                _strRecog = btnRecognizeImage.Text;
                 _unknownSymbolName = lblSymbolName.Text;
                 _strGrpResults = grpResults.Text;
                 _strGrpWords = grpWords.Text;
@@ -171,16 +171,16 @@ namespace DynamicParserExample
             {
                 InvokeFunction(() =>
                 {
-                    btnClear.Enabled = value;
-                    btnWordAdd.Enabled = value;
                     pbDraw.Enabled = value;
-                    txtWord.Enabled = value;
-                    btnImageSave.Enabled = value;
+                    btnImageCreate.Enabled = value;
                     btnImageDelete.Enabled = value;
                     tmrImagesCount.Enabled = value;
                     btnWordRemove.Enabled = value;
+                    btnWordAdd.Enabled = value;
+                    txtWord.Enabled = value;
                     btnSaveImage.Enabled = value;
                     btnLoadImage.Enabled = value;
+                    btnClearImage.Enabled = value;
                 });
             }
         }
@@ -388,7 +388,7 @@ namespace DynamicParserExample
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
-        void btnNext_Click(object sender, EventArgs e)
+        void btnImageNext_Click(object sender, EventArgs e)
         {
             SafetyExecute(() =>
             {
@@ -416,7 +416,7 @@ namespace DynamicParserExample
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
-        void btnPrev_Click(object sender, EventArgs e)
+        void btnImagePrev_Click(object sender, EventArgs e)
         {
             SafetyExecute(() =>
             {
@@ -457,7 +457,7 @@ namespace DynamicParserExample
                 }
                 if (_currentImage >= lst.Count || _currentImage < 0) return;
                 File.Delete(lst[_currentImage].ImagePath);
-                btnPrev_Click(null, null);
+                btnImagePrev_Click(null, null);
             }, () =>
             {
                 RefreshImagesCount();
@@ -470,7 +470,7 @@ namespace DynamicParserExample
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
-        void btnImageSave_Click(object sender, EventArgs e)
+        void btnImageCreate_Click(object sender, EventArgs e)
         {
             SafetyExecute(() =>
             {
@@ -479,7 +479,7 @@ namespace DynamicParserExample
             }, () =>
             {
                 RefreshImagesCount();
-                btnNext_Click(null, null);
+                btnImageNext_Click(null, null);
                 tmrImagesCount.Enabled = true;
             });
         }
@@ -501,16 +501,16 @@ namespace DynamicParserExample
                         _imageLastCount = -1;
                         SymbolBrowseClear();
                         btnImageDelete.Enabled = false;
-                        btnNext.Enabled = false;
-                        btnPrev.Enabled = false;
+                        btnImageNext.Enabled = false;
+                        btnImagePrev.Enabled = false;
                         return;
                     }
-                    if (!btnImageDelete.Enabled || !btnNext.Enabled || !btnPrev.Enabled || _imageLastCount > count)
-                        btnNext_Click(null, null);
+                    if (!btnImageNext.Enabled || !btnImagePrev.Enabled || _imageLastCount != count)
+                        btnImageNext_Click(null, null);
                     _imageLastCount = count;
-                    btnImageDelete.Enabled = true;
-                    btnNext.Enabled = true;
-                    btnPrev.Enabled = true;
+                    btnImageDelete.Enabled = btnImageCreate.Enabled;
+                    btnImageNext.Enabled = true;
+                    btnImagePrev.Enabled = true;
                 }
                 catch
                 {
@@ -541,7 +541,7 @@ namespace DynamicParserExample
                                 case 0:
                                     InvokeFunction(() =>
                                     {
-                                        btnRecognize.Text = StrRecognize;
+                                        btnRecognizeImage.Text = StrRecognize;
                                         lblElapsedTime.Text =
                                             $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch
                                                 .Elapsed.Seconds:00}";
@@ -551,7 +551,7 @@ namespace DynamicParserExample
                                 case 1:
                                     InvokeFunction(() =>
                                     {
-                                        btnRecognize.Text = StrRecognize1;
+                                        btnRecognizeImage.Text = StrRecognize1;
                                         lblElapsedTime.Text =
                                             $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch
                                                 .Elapsed.Seconds:00}";
@@ -561,7 +561,7 @@ namespace DynamicParserExample
                                 case 2:
                                     InvokeFunction(() =>
                                     {
-                                        btnRecognize.Text = StrRecognize2;
+                                        btnRecognizeImage.Text = StrRecognize2;
                                         lblElapsedTime.Text =
                                             $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch
                                                 .Elapsed.Seconds:00}";
@@ -571,7 +571,7 @@ namespace DynamicParserExample
                                 case 3:
                                     InvokeFunction(() =>
                                     {
-                                        btnRecognize.Text = StrRecognize3;
+                                        btnRecognizeImage.Text = StrRecognize3;
                                         lblElapsedTime.Text =
                                             $@"{_stopwatch.Elapsed.Hours:00}:{_stopwatch.Elapsed.Minutes:00}:{_stopwatch
                                                 .Elapsed.Seconds:00}";
@@ -594,7 +594,7 @@ namespace DynamicParserExample
                         _stopwatch.Stop();
                         EnableButtons = true;
                     }
-                }, () => InvokeFunction(() => btnRecognize.Text = _strRecog));
+                }, () => InvokeFunction(() => btnRecognizeImage.Text = _strRecog));
             })
             {
                 IsBackground = true,
@@ -608,7 +608,7 @@ namespace DynamicParserExample
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
-        void btnRecognize_Click(object sender, EventArgs e)
+        void btnRecognizeImage_Click(object sender, EventArgs e)
         {
             SafetyExecute(() =>
             {
@@ -767,8 +767,8 @@ namespace DynamicParserExample
         /// <param name="e">Данные о событии.</param>
         void FrmExample_Shown(object sender, EventArgs e)
         {
-            btnClear_Click(null, null);
-            btnNext_Click(null, null);
+            btnClearImage_Click(null, null);
+            btnImageNext_Click(null, null);
             RefreshImagesCount();
             WordsLoad();
         }
@@ -778,7 +778,7 @@ namespace DynamicParserExample
         /// </summary>
         /// <param name="sender">Вызывающий объект.</param>
         /// <param name="e">Данные о событии.</param>
-        void btnClear_Click(object sender, EventArgs e)
+        void btnClearImage_Click(object sender, EventArgs e)
         {
             SafetyExecute(() => _grFront.Clear(Color.White), () => pbDraw.Refresh());
         }
