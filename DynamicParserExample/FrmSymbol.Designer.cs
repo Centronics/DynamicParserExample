@@ -111,7 +111,7 @@
             this.KeyPreview = true;
             this.Name = "FrmSymbol";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "FrmSymbol";
+            this.Text = "Образ";
             this.Shown += new System.EventHandler(this.FrmSymbol_Shown);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FrmSymbol_KeyPress);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FrmSymbol_KeyUp);

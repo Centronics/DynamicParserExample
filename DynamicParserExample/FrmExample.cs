@@ -672,6 +672,8 @@ namespace DynamicParserExample
         /// <param name="e">Данные о событии.</param>
         void FrmExample_KeyUp(object sender, KeyEventArgs e)
         {
+            if (e.Alt || e.Control || e.Shift)
+                return;
             // ReSharper disable once SwitchStatementMissingSomeCases
             switch (e.KeyCode)
             {

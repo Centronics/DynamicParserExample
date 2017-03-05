@@ -156,6 +156,8 @@ namespace DynamicParserExample
         /// <param name="e">Данные о событии.</param>
         void FrmSymbol_KeyUp(object sender, KeyEventArgs e)
         {
+            if (e.Alt || e.Control || e.Shift)
+                return;
             RunFunction(() =>
             {
                 if (!_timedOut)
